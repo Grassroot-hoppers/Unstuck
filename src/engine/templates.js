@@ -83,8 +83,8 @@ export const DOMAIN_TEMPLATES = {
     // T2 [DERIVED: standard percentile interpretation; Costa & McCrae scatter] — 0% T3, no changes
     above_mid: (P, D, S) => `In a room of 100 people, about ${D.E} would be less socially energized. You lean toward engagement, activity, and social interaction. ${S.E >= 40 ? 'But your extraversion has a specific shape — the individual facets tell you which parts of social life energize you and which do not.' : 'The facet picture adds useful detail about what kind of social energy you run on.'}`,
 
-    // T1 [SOURCE: Johnson high E; Samuel & Widiger 2008 Histrionic PD profile]
-    high: (P, D) => `In a room of 100 people, only about ${100-D.E} would be more socially energized. You're drawn to people, activity, and impact — "sociable, outgoing, energetic, enthusiastic, and action-oriented." Your extraversion has a specific shape; how assertiveness, excitement-seeking, warmth, and cheerfulness combine tells the real story. At the extreme, elevated Extraversion across all six facets is the defining profile of histrionic personality features.`,
+    // T1 [SOURCE: Johnson high E; Costa & McCrae scatter] — M5 fix: PD language moved to very_high; M6 fix: no blanket "sociable" claim
+    high: (P, D, S) => `In a room of 100 people, only about ${100-D.E} would be more socially energized. You're drawn to engagement and action more than most. ${S.E >= 40 ? 'But your extraversion has a specific internal shape — your individual facets diverge significantly, which means the domain label does not describe you accurately. The facet breakdown matters more than this number.' : 'Your extraversion has a specific shape; how assertiveness, excitement-seeking, warmth, and cheerfulness combine tells the real story.'}`,
 
     // T1 [SOURCE: Johnson very high E; Samuel & Widiger 2008 Histrionic PD; Piedmont/WKU]
     very_high: (P, D) => `In a room of 100 people, only about ${100-D.E} would be more extraverted. You run on social energy — engagement, assertion, stimulation, positive emotion. At this level, the profile may show features documented in histrionic personality — the only personality disorder defined almost entirely by elevated Extraversion across all six facets. The specific facet pattern determines which parts of this drive are producing returns and which are costing more than they give back.`,
@@ -154,9 +154,15 @@ export const DOMAIN_TEMPLATES = {
 // ============================================================
 
 export const CROSS_TEMPLATES = {
-  // T1 [SOURCE: ACER O×C "Dreamers"; Costa & McCrae scatter; Mertens 2021 choice architecture]
+  // T1 [SOURCE: Costa & McCrae scatter; ACER N×C Style Graph; Mertens 2021 choice architecture] — M11 fix: distinguish driven-but-disorganized from true low-C
   engine_no_steering: {
-    teaser: (P) => `Your drive toward excellence is at ${P.C4} out of 100 — virtually nobody pushes harder. But your ability to organize is at ${P.C2}, and your tendency to pause before acting is at ${P.C6} — meaning ${100-P.C6} people out of 100 would think longer before committing. Research calls this the "Dreamer" pattern: "attracted to new ideas, able to develop them with imaginative elaboration, but may get lost in flights of fancy — good at starting innovative projects, less successful in completing them." Costa & McCrae confirm this scatter reflects genuinely different traits coexisting within the same person, not measurement error. Choice architecture research (d = .43 across 200+ studies) shows that modifying decision environments — making the productive choice the default — is consistently more effective than relying on self-control.`,
+    teaser: (P) => {
+      const isDrivenButDisorganized = P.C4 >= 75 || P.C5 >= 75;
+      if (isDrivenButDisorganized) {
+        return `Your drive is at ${P.C4} out of 100 and your discipline at ${P.C5} — but your ability to organize is at ${P.C2}, and your tendency to pause before acting is at ${P.C6}. ${100-P.C6} people out of 100 would think longer before committing. Costa & McCrae confirm: "Some scatter among facets within a domain is the rule; this scatter is not due to unreliability of measurement — it reflects real differences in standing on different but related traits." You are not low in Conscientiousness. You are high in drive and low in structure — an internal mismatch that produces a specific frustration: knowing exactly what you want to achieve and watching yourself fail to organize the path there. Choice architecture research (d = .43 across 200+ studies) shows that modifying environments — making the productive choice the default — is more effective than self-control, which you already have in abundance.`;
+      }
+      return `Your ability to organize is at ${P.C2} out of 100, and your tendency to pause before acting is at ${P.C6} — meaning ${100-P.C6} people out of 100 would think longer before committing. The ACER style graph calls this the "Dreamer" pattern: "attracted to new ideas, able to develop them with imaginative elaboration, but may get lost in flights of fancy — good at starting innovative projects, less successful in completing them." Costa & McCrae confirm this scatter reflects genuinely different traits coexisting within the same person, not measurement error.`;
+    },
     full: (P) => `[Full version: Costa & McCrae scatter interpretation, secondary loadings explanation, choice architecture evidence from Mertens 2021]`,
   },
 
@@ -234,7 +240,7 @@ export const CROSS_TEMPLATES = {
 
   // T1 [SOURCE: Peterson O×C conditional — verbatim quote]
   underachiever: {
-    teaser: (P) => `Your intellectual curiosity and openness are high — you're in the top ${100-P.O5} for ideas and the top ${100-P.O5} for openness overall. But your orderliness is at ${P.C2} and your cautiousness at ${P.C6}. Peterson names this directly: "Open, unconscientious people tend to be underachievers — they have the capability to succeed, can learn quickly, and are creative, but they have trouble implementing their ideas." He adds a critical modifier: this is "particularly the case if they are also above average in neuroticism." The ACER style graph calls this "Dreamers" — "good at starting innovative projects, but less successful in completing them, and may need help in staying focused."`,
+    teaser: (P) => `Your intellectual curiosity and openness are high — at the ${P.O5} percentile for ideas, only ${100-P.O5} in 100 would score higher. But your orderliness is at ${P.C2} and your cautiousness at ${P.C6}. Peterson names this directly: "Open, unconscientious people tend to be underachievers — they have the capability to succeed, can learn quickly, and are creative, but they have trouble implementing their ideas." He adds a critical modifier: this is "particularly the case if they are also above average in neuroticism." The ACER style graph calls this "Dreamers" — "good at starting innovative projects, but less successful in completing them, and may need help in staying focused."`,
     full: (P) => `[Full version: Peterson's O×C conditional with N modifier, ACER O×C Dreamer profile, identity diffusion risk analysis]`,
   },
 
