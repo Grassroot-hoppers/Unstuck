@@ -179,6 +179,84 @@ try {
 } catch(e) { /* Supabase not available */ }
 
 // ============================================================
+// STRIPE PLACEHOLDER
+// ============================================================
+// TODO: Replace with actual Stripe Payment Link
+// Create at: https://dashboard.stripe.com/payment-links
+// Product: "Unstuck — Full Interpretation" — €5.00 one-time
+// Success URL: results.html?id={RESULT_ID}&unlocked=true
+// The success URL parameter triggers an auto-unlock on page load
+const STRIPE_LINK = null; // Set to Stripe Payment Link URL when ready
+
+// ============================================================
+// PAYWALL: ACCESS CODE VALIDATION
+// ============================================================
+async function validateCode(code, resultId) {
+  if (!sb) return { valid: false, message: 'Database not available.' };
+
+  // Check if code exists and is unused
+  const { data, error } = await sb
+    .from('access_codes')
+    .select('id, code, used_by')
+    .eq('code', code.toUpperCase().trim())
+    .single();
+
+  if (error || !data) return { valid: false, message: 'Code not found.' };
+  if (data.used_by) return { valid: false, message: 'This code has already been used.' };
+
+  // Claim the code
+  const { error: updateError } = await sb
+    .from('access_codes')
+    .update({ used_by: resultId, used_at: new Date().toISOString() })
+    .eq('code', code.toUpperCase().trim());
+
+  if (updateError) return { valid: false, message: 'Error applying code. Please try again.' };
+
+  // Unlock the results
+  const { error: unlockError } = await sb
+    .from('results')
+    .update({ unlocked: true })
+    .eq('id', resultId);
+
+  if (unlockError) return { valid: false, message: 'Error unlocking results. Please try again.' };
+
+  return { valid: true, message: 'Code applied! Unlocking your full interpretation...' };
+}
+
+function performUnlock() {
+  // Remove locked class from all interpretation paragraphs (instant unblur)
+  document.querySelectorAll('.interp-locked').forEach(el => {
+    el.classList.add('interp-unlocking');
+    el.classList.remove('interp-locked');
+    // After animation, remove the unlocking class
+    el.addEventListener('animationend', () => {
+      el.classList.remove('interp-unlocking');
+      el.style.maxHeight = 'none';
+    }, { once: true });
+  });
+
+  // Hide the paywall card
+  const paywallCard = document.getElementById('paywall-card');
+  if (paywallCard) paywallCard.style.display = 'none';
+
+  // Enable the PDF button
+  const pdfBtn = document.getElementById('pdf-btn');
+  if (pdfBtn) {
+    pdfBtn.classList.remove('btn--disabled');
+    pdfBtn.removeAttribute('title');
+    pdfBtn.textContent = 'Download PDF';
+  }
+
+  // Show unlock banner
+  const banner = document.createElement('div');
+  banner.className = 'unlock-banner no-print';
+  banner.textContent = '✓ Full interpretation unlocked';
+  document.body.insertBefore(banner, document.body.firstChild);
+  setTimeout(() => { banner.style.opacity = '0'; banner.style.transition = 'opacity 0.5s'; }, 4000);
+  setTimeout(() => { banner.remove(); }, 4500);
+}
+
+// ============================================================
 // LOAD RESULTS: SUPABASE (by ID) or URL HASH (fallback)
 // ============================================================
 async function loadResults() {
@@ -186,11 +264,23 @@ async function loadResults() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get('id');
 
+  // Check for Stripe success redirect: ?id=abc123&unlocked=true
+  // This auto-unlocks after a successful payment redirect
+  const stripeUnlock = params.get('unlocked') === 'true';
+  if (stripeUnlock && id && sb) {
+    try {
+      await sb.from('results').update({ unlocked: true }).eq('id', id);
+      // Clean URL to remove the unlocked param
+      const cleanUrl = `${window.location.pathname}?id=${id}`;
+      window.history.replaceState({}, '', cleanUrl);
+    } catch(e) { /* best-effort */ }
+  }
+
   if (id && sb) {
     try {
       const { data, error } = await sb
         .from('results')
-        .select('scores, age_group, gender, created_at')
+        .select('scores, age_group, gender, created_at, unlocked')
         .eq('id', id)
         .single();
 
@@ -199,7 +289,8 @@ async function loadResults() {
           ...data.scores,
           _permalink: `${window.location.origin}${window.location.pathname}?id=${id}`,
           _savedAt: data.created_at,
-          _id: id
+          _id: id,
+          _unlocked: data.unlocked || false
         };
       }
     } catch(e) {
@@ -208,11 +299,13 @@ async function loadResults() {
   }
 
   // Fallback: read from URL hash (base64 encoded)
+  // Hash-based URLs are pre-paywall users — treat as unlocked
   const hash = window.location.hash.slice(1);
   if (hash) {
     try {
       const decoded = JSON.parse(atob(hash));
       decoded._permalink = window.location.href;
+      decoded._unlocked = true; // backward compat: hash users see everything
       return decoded;
     } catch(e) { /* invalid hash */ }
   }
@@ -242,6 +335,7 @@ async function render() {
 
   const { d: domains, f: facets, a: age, g: gender } = data;
   const domainOrder = ["N", "E", "O", "A", "C"];
+  const isUnlocked = data._unlocked === true;
 
   // Build domain blocks HTML
   const domainBlocksHTML = domainOrder.map(key => {
@@ -249,6 +343,7 @@ async function render() {
     const score = domains[key];
     const avg = (score / 24).toFixed(1);
     const level = getLevel(score, 24);
+    const interpClass = isUnlocked ? 'domain-block__interp' : 'domain-block__interp interp-locked';
 
     // Facets
     const facetHTML = Object.keys(meta.facets).map(fn => {
@@ -276,11 +371,31 @@ async function render() {
           <div class="domain-block__score"><strong>${avg}</strong> / 5.0</div>
           <span class="level-badge level-badge--${level}">${getLevelLabel(level)}</span>
         </div>
-        <p class="domain-block__interp">${INTERPRETATIONS[key][level]}</p>
+        <p class="${interpClass}">${INTERPRETATIONS[key][level]}</p>
         <div class="facets-grid">${facetHTML}</div>
       </div>
     `;
   }).join('');
+
+  // Build paywall card HTML (only shown when locked and has a Supabase ID)
+  const paywallHTML = (!isUnlocked && data._id) ? `
+    <div class="paywall-card no-print" id="paywall-card">
+      <h3>Unlock Your Full Interpretation</h3>
+      <p>You can see your scores — but what do they mean for your energy and vitality? The full interpretation connects your personality data to actionable insights.</p>
+      <div class="paywall-actions">
+        <div class="paywall-code">
+          <input type="text" id="code-input" placeholder="Enter access code" autocomplete="off" spellcheck="false" />
+          <button class="btn btn--primary btn--sm" id="code-btn">Apply Code</button>
+        </div>
+        ${STRIPE_LINK ? `
+          <div class="paywall-divider">or</div>
+          <a href="${STRIPE_LINK}" class="btn btn--secondary" id="stripe-btn">Unlock for €5 →</a>
+        ` : ''}
+      </div>
+      <p id="code-status" class="paywall-status"></p>
+      <p class="paywall-note">One-time payment. No subscription. Open source project.</p>
+    </div>
+  ` : '';
 
   app.innerHTML = `
     <div class="container--wide">
@@ -297,6 +412,9 @@ async function render() {
         </div>
       </div>
 
+      <!-- Paywall Card (shown between chart and domain details when locked) -->
+      ${paywallHTML}
+
       <!-- Domain Results -->
       ${domainBlocksHTML}
 
@@ -309,7 +427,7 @@ async function render() {
         </div>
         ${data._id ? `<p style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Result ID: ${data._id} · Saved permanently</p>` : '<p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">Bookmark this link to save your results.</p>'}
         <div class="share-actions">
-          <button class="btn btn--primary" id="pdf-btn">Download PDF</button>
+          <button class="btn btn--primary${isUnlocked ? '' : ' btn--disabled'}" id="pdf-btn"${isUnlocked ? '' : ' title="Unlock your full interpretation to download PDF"'}>${isUnlocked ? 'Download PDF' : '🔒 Unlock to Download PDF'}</button>
           <a href="assessment.html" class="btn btn--secondary">Retake Assessment</a>
         </div>
       </div>
@@ -429,10 +547,46 @@ async function render() {
     });
   });
 
-  // --- PDF Download ---
+  // --- PDF Download (only when unlocked) ---
   document.getElementById("pdf-btn").addEventListener("click", () => {
+    if (document.getElementById('pdf-btn').classList.contains('btn--disabled')) return;
     window.print();
   });
+
+  // --- Access Code Handler ---
+  const codeBtn = document.getElementById('code-btn');
+  const codeInput = document.getElementById('code-input');
+  if (codeBtn && codeInput && data._id) {
+    const handleCodeSubmit = async () => {
+      const code = codeInput.value.trim();
+      if (!code) return;
+
+      const statusEl = document.getElementById('code-status');
+      codeBtn.disabled = true;
+      codeBtn.textContent = 'Checking...';
+      statusEl.textContent = '';
+      statusEl.className = 'paywall-status';
+
+      const result = await validateCode(code, data._id);
+
+      if (result.valid) {
+        statusEl.textContent = result.message;
+        statusEl.classList.add('paywall-status--success');
+        // Delay slightly so user sees the success message
+        setTimeout(() => performUnlock(), 600);
+      } else {
+        statusEl.textContent = result.message;
+        statusEl.classList.add('paywall-status--error');
+        codeBtn.disabled = false;
+        codeBtn.textContent = 'Apply Code';
+      }
+    };
+
+    codeBtn.addEventListener('click', handleCodeSubmit);
+    codeInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleCodeSubmit();
+    });
+  }
 
   // --- Research Opt-In ---
   const optinBtn = document.getElementById("optin-btn");
