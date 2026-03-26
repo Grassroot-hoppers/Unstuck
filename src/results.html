@@ -24,6 +24,7 @@
 <meta name="description" content="Your IPIP-NEO-120 personality profile results — Big Five domains and 30 facets.">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
 
@@ -166,23 +167,64 @@ function facetToPercent(score) {
 }
 
 // ============================================================
-// DECODE RESULTS FROM URL
+// SUPABASE CONFIG
 // ============================================================
-function decodeResults() {
-  const hash = window.location.hash.slice(1);
-  if (!hash) return null;
-  try {
-    return JSON.parse(atob(hash));
-  } catch (e) {
-    return null;
+const SUPABASE_URL = 'https://placeholder.supabase.co'; // TODO: replace with real URL
+const SUPABASE_ANON_KEY = 'placeholder'; // TODO: replace with real anon key
+let sb = null;
+try {
+  if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'https://placeholder.supabase.co') {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
+} catch(e) { /* Supabase not available */ }
+
+// ============================================================
+// LOAD RESULTS: SUPABASE (by ID) or URL HASH (fallback)
+// ============================================================
+async function loadResults() {
+  // Check for Supabase short ID in query params: ?id=abc123
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+
+  if (id && sb) {
+    try {
+      const { data, error } = await sb
+        .from('results')
+        .select('scores, age_group, gender, created_at')
+        .eq('id', id)
+        .single();
+
+      if (data && !error) {
+        return {
+          ...data.scores,
+          _permalink: `${window.location.origin}${window.location.pathname}?id=${id}`,
+          _savedAt: data.created_at,
+          _id: id
+        };
+      }
+    } catch(e) {
+      console.warn('Supabase load failed, trying hash fallback:', e.message);
+    }
+  }
+
+  // Fallback: read from URL hash (base64 encoded)
+  const hash = window.location.hash.slice(1);
+  if (hash) {
+    try {
+      const decoded = JSON.parse(atob(hash));
+      decoded._permalink = window.location.href;
+      return decoded;
+    } catch(e) { /* invalid hash */ }
+  }
+
+  return null;
 }
 
 // ============================================================
 // RENDER
 // ============================================================
-function render() {
-  const data = decodeResults();
+async function render() {
+  const data = await loadResults();
   const app = document.getElementById("app");
 
   if (!data || !data.d) {
@@ -262,9 +304,10 @@ function render() {
       <div class="share-section no-print">
         <h3>Share Your Results</h3>
         <div class="share-url-box">
-          <input type="text" id="share-url" readonly value="${window.location.href}">
+          <input type="text" id="share-url" readonly value="${data._permalink || window.location.href}">
           <button class="btn btn--secondary btn--sm" id="copy-btn">Copy</button>
         </div>
+        ${data._id ? `<p style="margin-top: 0.5rem; font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);">Result ID: ${data._id} · Saved permanently</p>` : '<p style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">Bookmark this link to save your results.</p>'}
         <div class="share-actions">
           <button class="btn btn--primary" id="pdf-btn">Download PDF</button>
           <a href="assessment.html" class="btn btn--secondary">Retake Assessment</a>
@@ -382,7 +425,7 @@ function render() {
 // ============================================================
 // INIT
 // ============================================================
-render();
+render().catch(e => console.error('Render error:', e));
 </script>
 
 </body>
