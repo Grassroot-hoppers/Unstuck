@@ -314,6 +314,19 @@ async function render() {
         </div>
       </div>
 
+      <!-- Research Opt-In -->
+      ${data._id ? `
+      <div class="research-optin no-print" id="research-section" style="border: 1px solid var(--border); padding: 24px; margin-bottom: 48px; background: var(--bg-cream-dark, #F0EBE3);">
+        <h3 style="margin-bottom: 8px;">Help Improve Unstuck</h3>
+        <p style="font-size: 0.9375rem; margin-bottom: 12px;">Opt in to share your <strong>anonymized</strong> personality scores with our research pool. We study personality distributions to improve the platform. No individual data is shared — only aggregate domain scores, age group, and gender.</p>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <button class="btn btn--primary btn--sm" id="optin-btn" style="white-space: nowrap;">Yes, include my anonymous scores</button>
+          <button class="btn btn--ghost btn--sm" id="optout-btn" style="white-space: nowrap;">No thanks</button>
+        </div>
+        <p id="optin-status" style="font-family: var(--font-mono, monospace); font-size: 0.8rem; color: var(--green, #2D6A4F); margin-top: 8px; display: none;"></p>
+      </div>
+      ` : ''}
+
       <!-- What's Next -->
       <div class="next-section">
         <h3>What's Next</h3>
@@ -420,6 +433,35 @@ async function render() {
   document.getElementById("pdf-btn").addEventListener("click", () => {
     window.print();
   });
+
+  // --- Research Opt-In ---
+  const optinBtn = document.getElementById("optin-btn");
+  const optoutBtn = document.getElementById("optout-btn");
+  if (optinBtn && data._id && sb) {
+    optinBtn.addEventListener("click", async () => {
+      try {
+        const { error } = await sb
+          .from('results')
+          .update({ opt_in_research: true })
+          .eq('id', data._id);
+        const status = document.getElementById("optin-status");
+        if (!error) {
+          status.textContent = "✓ Thank you. Your anonymized scores are now part of the research pool.";
+          status.style.display = "block";
+          document.getElementById("research-section").querySelector("div").style.display = "none";
+        } else {
+          status.textContent = "Something went wrong. Your results are still saved — just not in the research pool.";
+          status.style.color = "#B85C38";
+          status.style.display = "block";
+        }
+      } catch(e) {
+        console.warn("Opt-in failed:", e);
+      }
+    });
+    optoutBtn.addEventListener("click", () => {
+      document.getElementById("research-section").style.display = "none";
+    });
+  }
 }
 
 // ============================================================
