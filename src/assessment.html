@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+   ______                            __
+  / ____/___  ____ ___  ____  __  __/ /____  _____
+ / /   / __ \/ __ `__ \/ __ \/ / / / __/ _ \/ ___/
+/ /___/ /_/ / / / / / / /_/ / /_/ / /_/  __/ /
+\____/\____/_/ /_/ /_/ .___/\__,_/\__/\___/_/
+                    /_/
+        Created with Perplexity Computer
+        https://www.perplexity.ai/computer
+-->
+
+<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<meta name="generator" content="Perplexity Computer">
+<meta name="author" content="Perplexity Computer">
+<meta property="og:see_also" content="https://www.perplexity.ai/computer">
+<link rel="author" href="https://www.perplexity.ai/computer">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assessment — Unstuck</title>
+<meta name="description" content="Take the IPIP-NEO-120 personality assessment. 120 questions, ~10 minutes.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="nav">
+  <a href="index.html" class="nav__logo" aria-label="Unstuck home">
+    <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="24" height="24" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 20V12a6 6 0 0 1 12 0v8" stroke="#2D6A4F" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="14" cy="11" r="2" fill="#B85C38"/>
+    </svg>
+    <span class="nav__wordmark">Unstuck</span>
+  </a>
+</nav>
+
+<!-- App Mount -->
+<div id="app"></div>
+
+<!-- Footer -->
+<footer class="footer" id="footer" style="display:none;">
+  <div class="container">
+    <p class="footer__text">
+      Based on IPIP-NEO-120 (Johnson, 2014). Items from <a href="https://ipip.ori.org/" target="_blank" rel="noopener">ipip.ori.org</a> (public domain).
+      <br>
+      <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// IPIP-NEO-120 ITEMS — Johnson (2014)
+// ============================================================
+const ITEMS = [
+  // NEUROTICISM (N)
+  // Facet 1: Anxiety
+  { num: 1, text: "Worry about things", domain: "N", facet: 1, keyed: "plus" },
+  { num: 31, text: "Fear for the worst", domain: "N", facet: 1, keyed: "plus" },
+  { num: 61, text: "Am afraid of many things", domain: "N", facet: 1, keyed: "plus" },
+  { num: 91, text: "Get stressed out easily", domain: "N", facet: 1, keyed: "plus" },
+  // Facet 2: Anger
+  { num: 6, text: "Get angry easily", domain: "N", facet: 2, keyed: "plus" },
+  { num: 36, text: "Get irritated easily", domain: "N", facet: 2, keyed: "plus" },
+  { num: 66, text: "Lose my temper", domain: "N", facet: 2, keyed: "plus" },
+  { num: 96, text: "Am not easily annoyed", domain: "N", facet: 2, keyed: "minus" },
+  // Facet 3: Depression
+  { num: 11, text: "Often feel blue", domain: "N", facet: 3, keyed: "plus" },
+  { num: 41, text: "Dislike myself", domain: "N", facet: 3, keyed: "plus" },
+  { num: 71, text: "Am often down in the dumps", domain: "N", facet: 3, keyed: "plus" },
+  { num: 101, text: "Feel comfortable with myself", domain: "N", facet: 3, keyed: "minus" },
+  // Facet 4: Self-Consciousness
+  { num: 16, text: "Am easily intimidated", domain: "N", facet: 4, keyed: "plus" },
+  { num: 46, text: "Am afraid to draw attention to myself", domain: "N", facet: 4, keyed: "plus" },
+  { num: 76, text: "Only feel comfortable with friends", domain: "N", facet: 4, keyed: "plus" },
+  { num: 106, text: "Find it difficult to approach others", domain: "N", facet: 4, keyed: "plus" },
+  // Facet 5: Immoderation
+  { num: 21, text: "Go on binges", domain: "N", facet: 5, keyed: "plus" },
+  { num: 51, text: "Rarely overindulge", domain: "N", facet: 5, keyed: "minus" },
+  { num: 81, text: "Easily resist temptations", domain: "N", facet: 5, keyed: "minus" },
+  { num: 111, text: "Am able to control my cravings", domain: "N", facet: 5, keyed: "minus" },
+  // Facet 6: Vulnerability
+  { num: 26, text: "Panic easily", domain: "N", facet: 6, keyed: "plus" },
+  { num: 56, text: "Feel that I'm unable to deal with things", domain: "N", facet: 6, keyed: "plus" },
+  { num: 86, text: "Remain calm under pressure", domain: "N", facet: 6, keyed: "minus" },
+  { num: 116, text: "Can handle complex problems", domain: "N", facet: 6, keyed: "minus" },
+
+  // EXTRAVERSION (E)
+  // Facet 1: Friendliness
+  { num: 2, text: "Make friends easily", domain: "E", facet: 1, keyed: "plus" },
+  { num: 32, text: "Warm up quickly to others", domain: "E", facet: 1, keyed: "plus" },
+  { num: 62, text: "Am hard to get to know", domain: "E", facet: 1, keyed: "minus" },
+  { num: 92, text: "Keep others at a distance", domain: "E", facet: 1, keyed: "minus" },
+  // Facet 2: Gregariousness
+  { num: 7, text: "Love large parties", domain: "E", facet: 2, keyed: "plus" },
+  { num: 37, text: "Talk to a lot of different people at parties", domain: "E", facet: 2, keyed: "plus" },
+  { num: 67, text: "Avoid crowds", domain: "E", facet: 2, keyed: "minus" },
+  { num: 97, text: "Prefer to be alone", domain: "E", facet: 2, keyed: "minus" },
+  // Facet 3: Assertiveness
+  { num: 12, text: "Take charge", domain: "E", facet: 3, keyed: "plus" },
+  { num: 42, text: "Try to lead others", domain: "E", facet: 3, keyed: "plus" },
+  { num: 72, text: "Wait for others to lead the way", domain: "E", facet: 3, keyed: "minus" },
+  { num: 102, text: "Keep in the background", domain: "E", facet: 3, keyed: "minus" },
+  // Facet 4: Activity Level
+  { num: 17, text: "Am always busy", domain: "E", facet: 4, keyed: "plus" },
+  { num: 47, text: "Am always on the go", domain: "E", facet: 4, keyed: "plus" },
+  { num: 77, text: "Like to take it easy", domain: "E", facet: 4, keyed: "minus" },
+  { num: 107, text: "Do a lot in my spare time", domain: "E", facet: 4, keyed: "plus" },
+  // Facet 5: Excitement-Seeking
+  { num: 22, text: "Love excitement", domain: "E", facet: 5, keyed: "plus" },
+  { num: 52, text: "Seek adventure", domain: "E", facet: 5, keyed: "plus" },
+  { num: 82, text: "Would never go hang gliding or bungee jumping", domain: "E", facet: 5, keyed: "minus" },
+  { num: 112, text: "Enjoy being reckless", domain: "E", facet: 5, keyed: "plus" },
+  // Facet 6: Cheerfulness
+  { num: 27, text: "Radiate joy", domain: "E", facet: 6, keyed: "plus" },
+  { num: 57, text: "Have a lot of fun", domain: "E", facet: 6, keyed: "plus" },
+  { num: 87, text: "Am not easily amused", domain: "E", facet: 6, keyed: "minus" },
+  { num: 117, text: "Love life", domain: "E", facet: 6, keyed: "plus" },
+
+  // OPENNESS (O)
+  // Facet 1: Imagination
+  { num: 3, text: "Have a vivid imagination", domain: "O", facet: 1, keyed: "plus" },
+  { num: 33, text: "Enjoy wild flights of fantasy", domain: "O", facet: 1, keyed: "plus" },
+  { num: 63, text: "Do not have a good imagination", domain: "O", facet: 1, keyed: "minus" },
+  { num: 93, text: "Love to daydream", domain: "O", facet: 1, keyed: "plus" },
+  // Facet 2: Artistic Interests
+  { num: 8, text: "Believe in the importance of art", domain: "O", facet: 2, keyed: "plus" },
+  { num: 38, text: "See beauty in things that others might not notice", domain: "O", facet: 2, keyed: "plus" },
+  { num: 68, text: "Do not like art", domain: "O", facet: 2, keyed: "minus" },
+  { num: 98, text: "Do not enjoy going to art museums", domain: "O", facet: 2, keyed: "minus" },
+  // Facet 3: Emotionality
+  { num: 13, text: "Experience my emotions intensely", domain: "O", facet: 3, keyed: "plus" },
+  { num: 43, text: "Feel others' emotions", domain: "O", facet: 3, keyed: "plus" },
+  { num: 73, text: "Rarely notice my emotional reactions", domain: "O", facet: 3, keyed: "minus" },
+  { num: 103, text: "Don't understand people who get emotional", domain: "O", facet: 3, keyed: "minus" },
+  // Facet 4: Adventurousness
+  { num: 18, text: "Prefer variety to routine", domain: "O", facet: 4, keyed: "plus" },
+  { num: 48, text: "Prefer to stick with things that I know", domain: "O", facet: 4, keyed: "minus" },
+  { num: 78, text: "Am attached to conventional ways", domain: "O", facet: 4, keyed: "minus" },
+  { num: 108, text: "Like to visit new places", domain: "O", facet: 4, keyed: "plus" },
+  // Facet 5: Intellect
+  { num: 23, text: "Like to solve complex problems", domain: "O", facet: 5, keyed: "plus" },
+  { num: 53, text: "Avoid philosophical discussions", domain: "O", facet: 5, keyed: "minus" },
+  { num: 83, text: "Am not interested in abstract ideas", domain: "O", facet: 5, keyed: "minus" },
+  { num: 113, text: "Can handle a lot of information", domain: "O", facet: 5, keyed: "plus" },
+  // Facet 6: Liberalism
+  { num: 28, text: "Tend to vote for liberal political candidates", domain: "O", facet: 6, keyed: "plus" },
+  { num: 58, text: "Believe that there is no absolute right or wrong", domain: "O", facet: 6, keyed: "plus" },
+  { num: 88, text: "Tend to vote for conservative political candidates", domain: "O", facet: 6, keyed: "minus" },
+  { num: 118, text: "Believe that we should be tough on crime", domain: "O", facet: 6, keyed: "minus" },
+
+  // AGREEABLENESS (A)
+  // Facet 1: Trust
+  { num: 4, text: "Trust others", domain: "A", facet: 1, keyed: "plus" },
+  { num: 34, text: "Believe that others have good intentions", domain: "A", facet: 1, keyed: "plus" },
+  { num: 64, text: "Trust what people say", domain: "A", facet: 1, keyed: "plus" },
+  { num: 94, text: "Distrust people", domain: "A", facet: 1, keyed: "minus" },
+  // Facet 2: Morality
+  { num: 9, text: "Use others for my own ends", domain: "A", facet: 2, keyed: "minus" },
+  { num: 39, text: "Know how to get around the rules", domain: "A", facet: 2, keyed: "minus" },
+  { num: 69, text: "Use flattery to get ahead", domain: "A", facet: 2, keyed: "minus" },
+  { num: 99, text: "Stick to the rules", domain: "A", facet: 2, keyed: "plus" },
+  // Facet 3: Altruism
+  { num: 14, text: "Make people feel welcome", domain: "A", facet: 3, keyed: "plus" },
+  { num: 44, text: "Anticipate the needs of others", domain: "A", facet: 3, keyed: "plus" },
+  { num: 74, text: "Love to help others", domain: "A", facet: 3, keyed: "plus" },
+  { num: 104, text: "Am concerned about others", domain: "A", facet: 3, keyed: "plus" },
+  // Facet 4: Cooperation
+  { num: 19, text: "Am easy to satisfy", domain: "A", facet: 4, keyed: "plus" },
+  { num: 49, text: "Have a sharp tongue", domain: "A", facet: 4, keyed: "minus" },
+  { num: 79, text: "Cut others to pieces", domain: "A", facet: 4, keyed: "minus" },
+  { num: 109, text: "Am out for my own personal gain", domain: "A", facet: 4, keyed: "minus" },
+  // Facet 5: Modesty
+  { num: 24, text: "Believe that I am better than others", domain: "A", facet: 5, keyed: "minus" },
+  { num: 54, text: "Think highly of myself", domain: "A", facet: 5, keyed: "minus" },
+  { num: 84, text: "Make myself the center of attention", domain: "A", facet: 5, keyed: "minus" },
+  { num: 114, text: "Dislike being the center of attention", domain: "A", facet: 5, keyed: "plus" },
+  // Facet 6: Sympathy
+  { num: 29, text: "Sympathize with the homeless", domain: "A", facet: 6, keyed: "plus" },
+  { num: 59, text: "Feel sympathy for those who are worse off than myself", domain: "A", facet: 6, keyed: "plus" },
+  { num: 89, text: "Believe in an eye for an eye", domain: "A", facet: 6, keyed: "minus" },
+  { num: 119, text: "Try not to think about the needy", domain: "A", facet: 6, keyed: "minus" },
+
+  // CONSCIENTIOUSNESS (C)
+  // Facet 1: Self-Efficacy
+  { num: 5, text: "Complete tasks successfully", domain: "C", facet: 1, keyed: "plus" },
+  { num: 35, text: "Excel in what I do", domain: "C", facet: 1, keyed: "plus" },
+  { num: 65, text: "Handle tasks smoothly", domain: "C", facet: 1, keyed: "plus" },
+  { num: 95, text: "Know how to get things done", domain: "C", facet: 1, keyed: "plus" },
+  // Facet 2: Orderliness
+  { num: 10, text: "Like to tidy up", domain: "C", facet: 2, keyed: "plus" },
+  { num: 40, text: "Often forget to put things back in their proper place", domain: "C", facet: 2, keyed: "minus" },
+  { num: 70, text: "Leave a mess in my room", domain: "C", facet: 2, keyed: "minus" },
+  { num: 100, text: "Like order", domain: "C", facet: 2, keyed: "plus" },
+  // Facet 3: Dutifulness
+  { num: 15, text: "Keep my promises", domain: "C", facet: 3, keyed: "plus" },
+  { num: 45, text: "Tell the truth", domain: "C", facet: 3, keyed: "plus" },
+  { num: 75, text: "Break rules", domain: "C", facet: 3, keyed: "minus" },
+  { num: 105, text: "Break my promises", domain: "C", facet: 3, keyed: "minus" },
+  // Facet 4: Achievement-Striving
+  { num: 20, text: "Work hard", domain: "C", facet: 4, keyed: "plus" },
+  { num: 50, text: "Do more than what's expected of me", domain: "C", facet: 4, keyed: "plus" },
+  { num: 80, text: "Do just enough work to get by", domain: "C", facet: 4, keyed: "minus" },
+  { num: 110, text: "Set high standards for myself and others", domain: "C", facet: 4, keyed: "plus" },
+  // Facet 5: Self-Discipline
+  { num: 25, text: "Am always prepared", domain: "C", facet: 5, keyed: "plus" },
+  { num: 55, text: "Carry out my plans", domain: "C", facet: 5, keyed: "plus" },
+  { num: 85, text: "Waste my time", domain: "C", facet: 5, keyed: "minus" },
+  { num: 115, text: "Have difficulty starting tasks", domain: "C", facet: 5, keyed: "minus" },
+  // Facet 6: Cautiousness
+  { num: 30, text: "Avoid mistakes", domain: "C", facet: 6, keyed: "plus" },
+  { num: 60, text: "Rush into things", domain: "C", facet: 6, keyed: "minus" },
+  { num: 90, text: "Make rash decisions", domain: "C", facet: 6, keyed: "minus" },
+  { num: 120, text: "Jump into things without thinking", domain: "C", facet: 6, keyed: "minus" }
+];
+
+// ============================================================
+// RESPONSE OPTIONS
+// ============================================================
+const OPTIONS = [
+  { value: 1, label: "Very Inaccurate" },
+  { value: 2, label: "Moderately Inaccurate" },
+  { value: 3, label: "Neither" },
+  { value: 4, label: "Moderately Accurate" },
+  { value: 5, label: "Very Accurate" }
+];
+
+// ============================================================
+// FACET NAMES
+// ============================================================
+const FACET_NAMES = {
+  N: { 1: "Anxiety", 2: "Anger", 3: "Depression", 4: "Self-Consciousness", 5: "Immoderation", 6: "Vulnerability" },
+  E: { 1: "Friendliness", 2: "Gregariousness", 3: "Assertiveness", 4: "Activity Level", 5: "Excitement-Seeking", 6: "Cheerfulness" },
+  O: { 1: "Imagination", 2: "Artistic Interests", 3: "Emotionality", 4: "Adventurousness", 5: "Intellect", 6: "Liberalism" },
+  A: { 1: "Trust", 2: "Morality", 3: "Altruism", 4: "Cooperation", 5: "Modesty", 6: "Sympathy" },
+  C: { 1: "Self-Efficacy", 2: "Orderliness", 3: "Dutifulness", 4: "Achievement-Striving", 5: "Self-Discipline", 6: "Cautiousness" }
+};
+
+// ============================================================
+// STATE
+// ============================================================
+const STORAGE_KEY = "unstuck_assessment";
+const ITEMS_PER_PAGE = 10;
+const TOTAL_PAGES = 12;
+const app = document.getElementById("app");
+
+let state = {
+  phase: "pre", // "pre", "assess", "calculating"
+  age: "",
+  gender: "",
+  currentPage: 0,
+  answers: {},        // { itemNum: responseValue }
+  shuffleOrder: [],   // shuffled indices into ITEMS array
+  startTime: null
+};
+
+// ============================================================
+// SHUFFLE (Fisher-Yates)
+// ============================================================
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ============================================================
+// STORAGE — in-memory store (persists within session)
+// ============================================================
+const memoryStore = {};
+
+function saveState() {
+  memoryStore[STORAGE_KEY] = JSON.stringify(state);
+}
+
+function loadState() {
+  try {
+    const saved = memoryStore[STORAGE_KEY];
+    if (saved) return JSON.parse(saved);
+  } catch (e) { }
+  return null;
+}
+
+function clearState() {
+  delete memoryStore[STORAGE_KEY];
+}
+
+// ============================================================
+// SCORING
+// ============================================================
+function scoreItem(item, response) {
+  if (item.keyed === "minus") return 6 - response;
+  return response;
+}
+
+function computeScores() {
+  const domains = { N: 0, E: 0, O: 0, A: 0, C: 0 };
+  const facets = {};
+  // Initialize facets
+  for (const d of "NEOAC") {
+    facets[d] = {};
+    for (let f = 1; f <= 6; f++) facets[d][f] = 0;
+  }
+
+  for (const item of ITEMS) {
+    const response = state.answers[item.num];
+    if (!response) continue;
+    const scored = scoreItem(item, response);
+    domains[item.domain] += scored;
+    facets[item.domain][item.facet] += scored;
+  }
+
+  return { domains, facets };
+}
+
+// ============================================================
+// ENCODE RESULTS FOR URL
+// ============================================================
+function encodeResults(scores) {
+  const data = {
+    d: scores.domains,
+    f: scores.facets,
+    a: state.age,
+    g: state.gender
+  };
+  return btoa(JSON.stringify(data));
+}
+
+// ============================================================
+// RENDER: PRE-ASSESSMENT
+// ============================================================
+function renderPre() {
+  document.getElementById("footer").style.display = "block";
+  app.innerHTML = `
+    <div class="pre-assess">
+      <h1 class="pre-assess__title">The Assessment</h1>
+      <p class="pre-assess__desc">
+        120 statements about how you think, feel, and act. Rate each one honestly — there are no right or wrong answers. This takes about 10 minutes.
+      </p>
+      <div class="form-group">
+        <label for="age-select">Age Group</label>
+        <select id="age-select">
+          <option value="">Select your age group</option>
+          <option value="16-17">16–17</option>
+          <option value="18-19">18–19</option>
+          <option value="20-21">20–21</option>
+          <option value="22-25">22–25</option>
+          <option value="26-30">26–30</option>
+          <option value="31-39">31–39</option>
+          <option value="40+">40+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="gender-select">Gender</label>
+        <select id="gender-select">
+          <option value="">Select your gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <button class="btn btn--primary btn--lg" id="begin-btn" disabled>Begin →</button>
+    </div>
+  `;
+
+  const ageSelect = document.getElementById("age-select");
+  const genderSelect = document.getElementById("gender-select");
+  const beginBtn = document.getElementById("begin-btn");
+
+  function checkReady() {
+    beginBtn.disabled = !(ageSelect.value && genderSelect.value);
+  }
+
+  ageSelect.addEventListener("change", checkReady);
+  genderSelect.addEventListener("change", checkReady);
+
+  beginBtn.addEventListener("click", () => {
+    state.age = ageSelect.value;
+    state.gender = genderSelect.value;
+    state.phase = "assess";
+    state.currentPage = 0;
+    state.answers = {};
+    state.shuffleOrder = shuffleArray(Array.from({ length: 120 }, (_, i) => i));
+    state.startTime = Date.now();
+    saveState();
+    renderAssessment();
+  });
+}
+
+// ============================================================
+// RENDER: RESUME MODAL
+// ============================================================
+function renderResumeModal(savedState) {
+  const answeredCount = Object.keys(savedState.answers || {}).length;
+  const pagesComplete = savedState.currentPage || 0;
+
+  app.innerHTML = `
+    <div class="resume-overlay">
+      <div class="resume-modal">
+        <h3>Welcome Back</h3>
+        <p>You've answered ${answeredCount} of 120 questions (page ${pagesComplete + 1} of 12). Pick up where you left off?</p>
+        <div class="resume-modal__actions">
+          <button class="btn btn--secondary" id="start-fresh-btn">Start Fresh</button>
+          <button class="btn btn--primary" id="resume-btn">Resume →</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("resume-btn").addEventListener("click", () => {
+    state = savedState;
+    if (state.phase === "assess") {
+      renderAssessment();
+    } else {
+      renderPre();
+    }
+  });
+
+  document.getElementById("start-fresh-btn").addEventListener("click", () => {
+    clearState();
+    state = { phase: "pre", age: "", gender: "", currentPage: 0, answers: {}, shuffleOrder: [], startTime: null };
+    renderPre();
+  });
+}
+
+// ============================================================
+// RENDER: ASSESSMENT
+// ============================================================
+function renderAssessment() {
+  document.getElementById("footer").style.display = "none";
+  const pageIndex = state.currentPage;
+  const start = pageIndex * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const pageItemIndices = state.shuffleOrder.slice(start, end);
+  const pageItems = pageItemIndices.map(i => ITEMS[i]);
+  const percent = Math.round((pageIndex / TOTAL_PAGES) * 100);
+  const answeredTotal = Object.keys(state.answers).length;
+  const minutesPerItem = 0.083; // ~5 seconds per item
+  const remainingItems = 120 - answeredTotal;
+  const minutesLeft = Math.max(1, Math.ceil(remainingItems * minutesPerItem));
+
+  app.innerHTML = `
+    <div class="progress-bar">
+      <div class="progress-bar__inner">
+        <div class="progress-bar__text">
+          <span>Page ${pageIndex + 1} of ${TOTAL_PAGES} — ${percent}% complete</span>
+          <span>~${minutesLeft} min remaining</span>
+        </div>
+        <div class="progress-bar__track">
+          <div class="progress-bar__fill" style="width: ${percent}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="questions-page" id="questions-container">
+      ${pageItems.map((item, idx) => `
+        <div class="question-block" data-item-num="${item.num}">
+          <div class="question__number">${start + idx + 1} of 120</div>
+          <div class="question__text">I ${item.text.charAt(0).toLowerCase() + item.text.slice(1)}.</div>
+          <div class="question__options">
+            ${OPTIONS.map(opt => `
+              <button class="option-btn ${state.answers[item.num] === opt.value ? 'option-btn--selected' : ''}"
+                      data-item="${item.num}" data-value="${opt.value}">
+                ${opt.label}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('')}
+
+      <div class="nav-buttons">
+        ${pageIndex > 0 ? '<button class="btn btn--ghost" id="back-btn">← Back</button>' : '<div></div>'}
+        <button class="btn btn--primary" id="next-btn" disabled>
+          ${pageIndex === TOTAL_PAGES - 1 ? 'Finish →' : 'Next →'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Scroll to top
+  window.scrollTo(0, 0);
+
+  // Wire up option buttons
+  const container = document.getElementById("questions-container");
+  container.addEventListener("click", (e) => {
+    const btn = e.target.closest(".option-btn");
+    if (!btn) return;
+
+    const itemNum = parseInt(btn.dataset.item);
+    const value = parseInt(btn.dataset.value);
+
+    state.answers[itemNum] = value;
+
+    // Update visual selection
+    const block = btn.closest(".question-block");
+    block.querySelectorAll(".option-btn").forEach(b => b.classList.remove("option-btn--selected"));
+    btn.classList.add("option-btn--selected");
+
+    checkPageComplete();
+  });
+
+  // Check if all items on page are answered
+  function checkPageComplete() {
+    const allAnswered = pageItems.every(item => state.answers[item.num] !== undefined);
+    document.getElementById("next-btn").disabled = !allAnswered;
+  }
+  checkPageComplete();
+
+  // Next button
+  document.getElementById("next-btn").addEventListener("click", () => {
+    saveState();
+    if (pageIndex === TOTAL_PAGES - 1) {
+      // Assessment complete
+      state.phase = "calculating";
+      saveState();
+      renderCalculating();
+    } else {
+      state.currentPage = pageIndex + 1;
+      saveState();
+      renderAssessment();
+    }
+  });
+
+  // Back button
+  const backBtn = document.getElementById("back-btn");
+  if (backBtn) {
+    backBtn.addEventListener("click", () => {
+      state.currentPage = pageIndex - 1;
+      saveState();
+      renderAssessment();
+    });
+  }
+}
+
+// ============================================================
+// RENDER: CALCULATING
+// ============================================================
+function renderCalculating() {
+  document.getElementById("footer").style.display = "none";
+  app.innerHTML = `
+    <div class="calculating">
+      <div class="spinner"></div>
+      <h2>Calculating your results...</h2>
+      <p>Scoring 120 items across 5 domains and 30 facets.</p>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const scores = computeScores();
+    const encoded = encodeResults(scores);
+    clearState();
+    window.location.href = "results.html#" + encoded;
+  }, 1500);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+function init() {
+  const saved = loadState();
+  if (saved && saved.phase === "assess" && Object.keys(saved.answers || {}).length > 0) {
+    renderResumeModal(saved);
+  } else {
+    renderPre();
+  }
+}
+
+init();
+</script>
+
+</body>
+</html>
