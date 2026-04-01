@@ -24,6 +24,7 @@
 <meta name="description" content="Take the IPIP-NEO-120 personality assessment. 120 questions, ~10 minutes.">
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-results.js"></script>
 </head>
 <body>
 
@@ -367,6 +368,9 @@ function renderPre() {
         </select>
       </div>
       <button class="btn btn--primary btn--lg" id="begin-btn" disabled>Begin →</button>
+      ${typeof UnstuckSupabase !== 'undefined' && UnstuckSupabase.getLastResultId()
+        ? `<p class="pre-assess__last"><a href="results.html?id=${encodeURIComponent(UnstuckSupabase.getLastResultId())}" class="pre-assess__last-link">Open your last saved results →</a></p>`
+        : ''}
     </div>
   `;
 
@@ -540,36 +544,6 @@ function renderAssessment() {
 }
 
 // ============================================================
-// SUPABASE CONFIG
-// ============================================================
-const SUPABASE_URL = 'https://kxgftilyoghdjzknehts.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4Z2Z0aWx5b2doZGp6a25laHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzYyMDEsImV4cCI6MjA5MDA1MjIwMX0.MU2TLshVlVb3O2LFy_FtxIYdBW30jUy8AHP2AhUNOQE';
-let sb = null;
-try {
-  if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'https://placeholder.supabase.co') {
-    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  }
-} catch(e) { /* Supabase not available — will use URL hash fallback */ }
-
-function generateId() {
-  const chars = 'abcdefghjkmnpqrstuvwxyz23456789';
-  let id = '';
-  for (let i = 0; i < 8; i++) id += chars[Math.floor(Math.random() * chars.length)];
-  return id;
-}
-
-async function saveToSupabase(scores) {
-  if (!sb) return null;
-  const id = generateId();
-  const data = { d: scores.domains, f: scores.facets, a: state.age, g: state.gender };
-  try {
-    const { error } = await sb.from('results').insert({ id, scores: data, age_group: state.age, gender: state.gender });
-    if (error) { console.warn('Supabase save failed:', error.message); return null; }
-    return id;
-  } catch(e) { console.warn('Supabase unavailable:', e.message); return null; }
-}
-
-// ============================================================
 // RENDER: CALCULATING
 // ============================================================
 function renderCalculating() {
@@ -585,14 +559,25 @@ function renderCalculating() {
   setTimeout(async () => {
     const scores = computeScores();
     const encoded = encodeResults(scores);
+    const scoresPayload = { d: scores.domains, f: scores.facets, a: state.age, g: state.gender };
+    const sb = typeof UnstuckSupabase !== 'undefined'
+      ? UnstuckSupabase.getSupabaseClient(typeof supabase !== 'undefined' ? supabase : null)
+      : null;
+    let id = null;
+    if (sb && UnstuckSupabase) {
+      id = await UnstuckSupabase.saveResultsRow(sb, {
+        scoresObj: scoresPayload,
+        age_group: state.age,
+        gender: state.gender,
+      });
+    }
     clearState();
 
-    // Try Supabase first, fall back to URL hash
-    const id = await saveToSupabase(scores);
-    if (id) {
-      window.location.href = "results.html?id=" + id;
+    if (id && UnstuckSupabase) {
+      UnstuckSupabase.setLastResultId(id);
+      window.location.href = 'results.html?id=' + encodeURIComponent(id) + '&new=1';
     } else {
-      window.location.href = "results.html#" + encoded;
+      window.location.href = 'results.html#' + encoded;
     }
   }, 1500);
 }
