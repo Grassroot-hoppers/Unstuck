@@ -123,7 +123,7 @@ See [docs/scoring.md](docs/scoring.md) for full scoring methodology.
 1. **All 120 items are present and correctly keyed.** Any addition, removal, or rewording of items invalidates the assessment.
 2. **Reverse scoring is correct.** Minus-keyed items: score = 6 - response. If this breaks, all results are wrong.
 3. **The results URL is self-contained.** Given just the URL hash, the results page must render correctly with no other data source.
-4. **No data is sent to any server without explicit user consent.** The default is fully client-side.
+4. **Results persistence is automatic once the assessment is finished.** Completing the flow saves scores to Supabase so the short `?id=` link keeps working; users see a clear “save this link” prompt. Until completion, answers stay in the browser (localStorage). Hash-only results remain supported if save fails or for legacy links.
 5. **The site works without JavaScript for the landing page.** The assessment and results require JS (Chart.js, scoring logic), but `index.html` should be readable without it.
 
 ## Where to Make Common Changes

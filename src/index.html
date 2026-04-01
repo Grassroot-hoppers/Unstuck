@@ -25,6 +25,7 @@
 <meta property="og:title" content="Unstuck — Free Science-Based Personality Assessment">
 <meta property="og:description" content="Your energy isn't gone. It's stuck. Take the free IPIP-NEO-120 and find out where.">
 <link rel="stylesheet" href="styles.css">
+<script src="supabase-results.js" defer></script>
 </head>
 <body>
 
@@ -50,6 +51,8 @@
   </p>
   <div class="hero__cta">
     <a href="assessment.html" class="btn btn--primary btn--lg">Start the Assessment — Free →</a>
+    <!-- Filled by JS when unstuck_last_result_id exists -->
+    <p class="last-results-cta" id="last-results-cta" hidden></p>
   </div>
   <div class="hero__badges">
     <span class="badge">
@@ -62,7 +65,7 @@
     </span>
     <span class="badge">
       <svg viewBox="0 0 16 16" fill="none"><rect x="3" y="7" width="10" height="7" rx="1" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" stroke="currentColor" stroke-width="1.5"/></svg>
-      100% private — runs in your browser
+      No account — your link is your key
     </span>
   </div>
 </section>
@@ -127,7 +130,7 @@
   <div class="container">
     <h2 class="section__title">Ready to see what's under the surface?</h2>
     <p class="section__text" style="margin: 0 auto var(--space-xl); text-align: center;">
-      120 honest answers. 10 minutes. No account. No data leaves your browser.
+      120 honest answers. ~10 minutes. No account. When you finish, we save your scores so your results link keeps working.
     </p>
     <a href="assessment.html" class="btn btn--primary btn--lg">Start the Assessment — Free →</a>
   </div>
@@ -143,6 +146,23 @@
     </p>
   </div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var US = window.UnstuckSupabase;
+  if (!US) return;
+  var id = US.getLastResultId();
+  if (!id) return;
+  var slot = document.getElementById('last-results-cta');
+  if (!slot) return;
+  var a = document.createElement('a');
+  a.href = 'results.html?id=' + encodeURIComponent(id);
+  a.className = 'btn btn--secondary';
+  a.textContent = 'Open your last results';
+  slot.appendChild(a);
+  slot.hidden = false;
+});
+</script>
 
 </body>
 </html>

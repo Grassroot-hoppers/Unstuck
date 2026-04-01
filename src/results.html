@@ -34,6 +34,7 @@
 <link rel="stylesheet" href="styles.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="supabase-results.js"></script>
 <style>
 /* === v0.5 Engine Integration Styles === */
 
@@ -308,6 +309,23 @@
 
 <!-- App Mount -->
 <div id="app"></div>
+
+<!-- First-time save reminder (shown when ?new=1 after Supabase save) -->
+<div id="save-link-modal" class="save-link-modal no-print" role="dialog" aria-modal="true" aria-labelledby="save-link-modal-title" aria-hidden="true" hidden>
+  <div class="save-link-modal__backdrop" data-save-link-backdrop tabindex="-1"></div>
+  <div class="save-link-modal__panel">
+    <h2 id="save-link-modal-title" class="save-link-modal__title">Don't lose your results</h2>
+    <p class="save-link-modal__body">Your profile is saved to this link. Copy it or email it to yourself so you can open it later — even if you change devices.</p>
+    <div class="save-link-modal__url-row">
+      <input type="text" class="save-link-modal__input" id="save-link-modal-url" readonly autocomplete="off" aria-label="Permalink to your results">
+    </div>
+    <div class="save-link-modal__actions">
+      <button type="button" class="btn btn--primary" id="save-link-modal-copy">Copy link</button>
+      <a class="btn btn--secondary" id="save-link-modal-email" href="#">Email me this link</a>
+      <button type="button" class="btn btn--ghost" id="save-link-modal-dismiss">Got it</button>
+    </div>
+  </div>
+</div>
 
 <!-- Footer -->
 <footer class="footer">
@@ -1474,16 +1492,80 @@ function roomOf100Text(pct) {
 }
 
 // ============================================================
-// SUPABASE CONFIG
+// SUPABASE CLIENT (shared module)
 // ============================================================
-const SUPABASE_URL = 'https://kxgftilyoghdjzknehts.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4Z2Z0aWx5b2doZGp6a25laHRzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzYyMDEsImV4cCI6MjA5MDA1MjIwMX0.MU2TLshVlVb3O2LFy_FtxIYdBW30jUy8AHP2AhUNOQE';
 let sb = null;
-try {
-  if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'https://placeholder.supabase.co') {
-    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+if (typeof UnstuckSupabase !== 'undefined' && typeof supabase !== 'undefined') {
+  sb = UnstuckSupabase.getSupabaseClient(supabase);
+}
+
+function stripNewQueryParam() {
+  const u = new URL(window.location.href);
+  if (!u.searchParams.has('new')) return;
+  u.searchParams.delete('new');
+  const qs = u.searchParams.toString();
+  history.replaceState(null, '', u.pathname + (qs ? '?' + qs : '') + u.hash);
+}
+
+let saveLinkModalEscHandler = null;
+
+function closeSaveLinkModal() {
+  const el = document.getElementById('save-link-modal');
+  if (!el) return;
+  el.hidden = true;
+  el.setAttribute('aria-hidden', 'true');
+  stripNewQueryParam();
+  if (saveLinkModalEscHandler) {
+    document.removeEventListener('keydown', saveLinkModalEscHandler);
+    saveLinkModalEscHandler = null;
   }
-} catch(e) { /* Supabase not available */ }
+}
+
+function openSaveLinkModal(permalink) {
+  const el = document.getElementById('save-link-modal');
+  const input = document.getElementById('save-link-modal-url');
+  const emailA = document.getElementById('save-link-modal-email');
+  if (!el || !input || !emailA) return;
+  input.value = permalink;
+  const subject = 'My Unstuck results';
+  const body = 'Save this link to open your personality results anytime:\n\n' + permalink;
+  emailA.href = 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  emailA.setAttribute('rel', 'noopener');
+  el.hidden = false;
+  el.setAttribute('aria-hidden', 'false');
+  const copyBtn = document.getElementById('save-link-modal-copy');
+  if (copyBtn) copyBtn.focus();
+  saveLinkModalEscHandler = function (e) {
+    if (e.key === 'Escape') closeSaveLinkModal();
+  };
+  document.addEventListener('keydown', saveLinkModalEscHandler);
+}
+
+(function wireSaveLinkModal() {
+  const modal = document.getElementById('save-link-modal');
+  if (!modal) return;
+  const backdrop = modal.querySelector('[data-save-link-backdrop]');
+  if (backdrop) backdrop.addEventListener('click', closeSaveLinkModal);
+  const dismiss = document.getElementById('save-link-modal-dismiss');
+  if (dismiss) dismiss.addEventListener('click', closeSaveLinkModal);
+  const copyBtn = document.getElementById('save-link-modal-copy');
+  if (copyBtn) {
+    copyBtn.addEventListener('click', function () {
+      const input = document.getElementById('save-link-modal-url');
+      if (!input) return;
+      input.focus();
+      input.select();
+      navigator.clipboard.writeText(input.value).then(function () {
+        copyBtn.textContent = 'Copied!';
+        setTimeout(function () { copyBtn.textContent = 'Copy link'; }, 2000);
+      }).catch(function () {
+        try {
+          document.execCommand('copy');
+        } catch (e) {}
+      });
+    });
+  }
+})();
 
 // ============================================================
 // LOAD RESULTS: SUPABASE (by ID) or URL HASH (fallback)
@@ -1503,10 +1585,13 @@ async function loadResults() {
       if (data && !error) {
         return {
           ...data.scores,
-          _permalink: `${window.location.origin}${window.location.pathname}?id=${id}`,
+          _permalink: `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(id)}`,
           _savedAt: data.created_at,
           _id: id,
         };
+      }
+      if (typeof UnstuckSupabase !== 'undefined' && UnstuckSupabase.getLastResultId() === id) {
+        UnstuckSupabase.clearLastResultId();
       }
     } catch(e) {
       console.warn('Supabase load failed, trying hash fallback:', e.message);
@@ -1850,6 +1935,12 @@ async function render() {
     optoutBtn.addEventListener("click", () => {
       document.getElementById("research-section").style.display = "none";
     });
+  }
+
+  const qsForModal = new URLSearchParams(window.location.search);
+  if (qsForModal.get("new") === "1" && data._id) {
+    const cleanPermalink = `${window.location.origin}${window.location.pathname}?id=${encodeURIComponent(data._id)}`;
+    openSaveLinkModal(cleanPermalink);
   }
 }
 

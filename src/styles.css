@@ -441,6 +441,22 @@ h1, h2, h3, h4 {
   line-height: 1.7;
 }
 
+.pre-assess__last {
+  margin-top: var(--space-lg);
+  font-size: var(--text-sm);
+}
+
+.pre-assess__last-link {
+  color: var(--forest);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pre-assess__last-link:hover {
+  color: var(--forest-dark);
+}
+
 .form-group {
   text-align: left;
   margin-bottom: var(--space-lg);
@@ -1138,6 +1154,98 @@ h1, h2, h3, h4 {
 }
 
 /* ============================================================
+   SAVE-LINK MODAL (results page, ?new=1)
+   ============================================================ */
+
+.save-link-modal[hidden] {
+  display: none !important;
+}
+
+.save-link-modal:not([hidden]) {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+}
+
+.save-link-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 26, 0.45);
+  cursor: pointer;
+}
+
+.save-link-modal__panel {
+  position: relative;
+  z-index: 1;
+  max-width: 420px;
+  width: 100%;
+  padding: var(--space-xl);
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(26, 26, 26, 0.12);
+}
+
+.save-link-modal__title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+  line-height: 1.25;
+}
+
+.save-link-modal__body {
+  font-size: var(--text-sm);
+  color: var(--ink-light);
+  line-height: 1.65;
+  margin-bottom: var(--space-lg);
+}
+
+.save-link-modal__url-row {
+  margin-bottom: var(--space-lg);
+}
+
+.save-link-modal__input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.save-link-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.save-link-modal__actions .btn {
+  flex: 1 1 auto;
+  min-width: 7rem;
+  justify-content: center;
+  text-align: center;
+}
+
+/* --- Landing: reopen last saved results --- */
+
+.last-results-cta {
+  margin-top: var(--space-md);
+  text-align: center;
+}
+
+.last-results-cta .btn {
+  font-size: var(--text-sm);
+}
+
+/* ============================================================
    PRINT STYLESHEET — PDF generation
    ============================================================ */
 
@@ -1149,7 +1257,8 @@ h1, h2, h3, h4 {
   }
 
   .nav, .progress-bar, .share-section, .share-actions,
-  .btn, .footer, .next-section a, .no-print, .paywall-card {
+  .btn, .footer, .next-section a, .no-print, .paywall-card,
+  .save-link-modal {
     display: none !important;
   }
 
