@@ -89,6 +89,31 @@ function opennessChannelNote(P, S, interpretive) {
   );
 }
 
+/**
+ * Surfaced on the N domain paragraph when facets diverge in a characteristic way (T2 derived).
+ * Low N4 vs elevated N1/N2/N3/N6: avoid implying uniform "worry about everything including how you look socially."
+ */
+function neuroticismFacetShapeNote(P) {
+  const otherCodes = ['N1', 'N2', 'N3', 'N6'];
+  const others = otherCodes.map((c) => P[c]).filter((p) => p != null);
+  const n4 = P.N4;
+  if (n4 == null || others.length < 3) return '';
+  const meanOther = others.reduce((a, b) => a + b, 0) / others.length;
+  const lo = Math.min(...others);
+  const hi = Math.max(...others);
+  const lab = NORMS.N4?.label || 'Self-Consciousness';
+
+  if (n4 <= 38 && meanOther >= 48 && meanOther - n4 >= 22) {
+    return ` The facet breakdown sharpens this: ${lab} is only about ${n4} out of 100 — well below your Anxiety, Anger, Depression, and Vulnerability facets, which sit higher together (roughly ${lo}–${hi}). That pattern usually reads less like steady embarrassment or image-worry in every situation, and more like tension, irritability, and mood vulnerability without a strong social-evaluative core.`;
+  }
+
+  if (n4 >= 58 && meanOther <= 45 && n4 - meanOther >= 18) {
+    return ` The facet breakdown sharpens this: ${lab} is about ${n4} out of 100 — markedly higher than your other Neuroticism facets, which are comparatively lower (roughly ${lo}–${hi}). That often means self-presentation and perceived judgment carry more of the strain than generic mood alone.`;
+  }
+
+  return '';
+}
+
 // ============================================================
 // DOMAIN TEMPLATES (30 total: 5 domains × 6 bands)
 // ============================================================
@@ -380,7 +405,9 @@ export function getDomainText(domain, percentile, P, D, S, interpretive = null) 
 
   const template = DOMAIN_TEMPLATES[domain]?.[band];
   if (!template) return '';
-  return template(P, D, S, interpretive);
+  let text = template(P, D, S, interpretive);
+  if (domain === 'N') text += neuroticismFacetShapeNote(P);
+  return text;
 }
 
 /**
