@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing tools — Unstuck</title>
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="nav__logo" aria-label="Unstuck home">
+    <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+      <rect x="2" y="2" width="24" height="24" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 20V12a6 6 0 0 1 12 0v8" stroke="#2D6A4F" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="14" cy="11" r="2" fill="#B85C38"/>
+    </svg>
+    <span class="nav__wordmark">Unstuck</span>
+  </a>
+  <a href="index.html" class="nav__link">Home</a>
+</nav>
+
+<main class="container section">
+  <h1 class="section__title">Testing tools</h1>
+  <p class="pre-assess__desc">
+    Illustrative fixtures for testing only — not claims about any real person.
+  </p>
+
+  <h2 class="section__kicker" style="margin-top: 2rem;">Persona fixtures</h2>
+  <p class="pre-assess__desc">
+    Each link opens the real assessment with demographics preset to 26–30 / male and replays all 120 items via the live UI (about 1 second per page after answers).
+  </p>
+  <ul class="checklist">
+    <li><a href="assessment.html?fixture=trump">Trump</a> — high Extraversion / assertiveness; very low Agreeableness; lower Openness.</li>
+    <li><a href="assessment.html?fixture=jobs">Steve Jobs</a> — very high Openness + Conscientiousness; very low Agreeableness.</li>
+    <li><a href="assessment.html?fixture=tyson">Mike Tyson</a> — high Neuroticism + Extraversion; lower Agreeableness + Conscientiousness.</li>
+    <li><a href="assessment.html?fixture=ross">Bob Ross</a> — very high Agreeableness + Openness; very low Neuroticism.</li>
+    <li><a href="assessment.html?fixture=cobain">Kurt Cobain</a> — very high Neuroticism + Openness; lower Extraversion + Conscientiousness.</li>
+  </ul>
+
+  <h2 class="section__kicker" style="margin-top: 2rem;">Short manual path</h2>
+  <p class="pre-assess__desc">
+    <a href="assessment.html?debug=1">assessment.html?debug=1</a> — Answer the first five items yourself; the rest of the run uses neutral auto-selection via the same buttons and navigation as a normal session.
+  </p>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <p class="footer__text">
+      <a href="index.html">Unstuck home</a>
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
