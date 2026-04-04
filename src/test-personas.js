@@ -73,8 +73,8 @@
         // E1 — Friendliness
         { num: 2,   text: "Make friends easily",                   answer: 2, justification: "Very small inner circle; guarded and cold at first contact" },
         { num: 32,  text: "Warm up quickly to others",             answer: 2, justification: "Warmth was strategic and selective, not spontaneous" },
-        { num: 62,  text: "Am hard to get to know",                answer: 2, justification: "Reversed — he was hard to get to know" },
-        { num: 92,  text: "Keep others at a distance",             answer: 3, justification: "Reversed — kept most at distance but pulled chosen few close; neutral" },
+        { num: 62,  text: "Am hard to get to know",                answer: 4, justification: "He was genuinely hard to get to know; guarded with most people" },
+        { num: 92,  text: "Keep others at a distance",             answer: 4, justification: "Kept most people at arm's length; inner circle was tiny" },
 
         // E2 — Gregariousness
         { num: 7,   text: "Love large parties",                   answer: 3, justification: "No strong evidence either way" },
@@ -125,8 +125,8 @@
         // O3 — Emotionality
         { num: 13,  text: "Experience my emotions intensely",      answer: 4, justification: "Cried frequently; intense emotional reactions well documented" },
         { num: 43,  text: "Feel others' emotions",                 answer: 2, justification: "Isaacson: could read people to manipulate, not empathize — cognitive not affective empathy" },
-        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 2, justification: "Reversed — his own emotional reactions were intense but he was oblivious to others'" },
-        { num: 103, text: "Don't understand people who get emotional", answer: 3, justification: "Reversed — frequently dismissed employees' emotional responses as weakness; neutral is defensible" },
+        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 4, justification: "Oblivious to how his emotional reactions landed on others" },
+        { num: 103, text: "Don't understand people who get emotional", answer: 4, justification: "Dismissed emotional employees as weak; cognitive empathy only" },
 
         // O4 — Adventurousness
         { num: 18,  text: "Prefer variety to routine",             answer: 5, justification: "Constantly reinventing products, companies, industries" },
