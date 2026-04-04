@@ -251,6 +251,18 @@ window.buildFixtureAnswersFromFacetMeans = function (facetMeans) {
 <script>
 const ITEMS = window.UNSTUCK_ITEMS;
 
+const __qs = new URLSearchParams(window.location.search);
+const __fixtureId = __qs.get("fixture");
+const __debugShort =
+  __qs.has("debug") &&
+  __qs.get("debug") !== "0" &&
+  __qs.get("debug") !== "false";
+const __activeFixtureId =
+  __fixtureId && window.UnstuckTestPersonas && UnstuckTestPersonas.getFixture(__fixtureId)
+    ? __fixtureId
+    : null;
+const __debugMode = !__activeFixtureId && __debugShort;
+
 // ============================================================
 // RESPONSE OPTIONS
 // ============================================================
@@ -288,7 +300,10 @@ let state = {
   currentPage: 0,
   answers: {},        // { itemNum: responseValue }
   shuffleOrder: [],   // shuffled indices into ITEMS array
-  startTime: null
+  startTime: null,
+  fixtureId: null,
+  debugShort: false,
+  debugManualDone: false,
 };
 
 // ============================================================
@@ -416,6 +431,15 @@ function renderPre() {
   ageSelect.addEventListener("change", checkReady);
   genderSelect.addEventListener("change", checkReady);
 
+  if (state.fixtureId && window.UnstuckTestPersonas) {
+    const fx = UnstuckTestPersonas.getFixture(state.fixtureId);
+    if (fx) {
+      ageSelect.value = fx.defaultAge;
+      genderSelect.value = fx.defaultGender;
+      checkReady();
+    }
+  }
+
   beginBtn.addEventListener("click", () => {
     state.age = ageSelect.value;
     state.gender = genderSelect.value;
@@ -460,7 +484,18 @@ function renderResumeModal(savedState) {
 
   document.getElementById("start-fresh-btn").addEventListener("click", () => {
     clearState();
-    state = { phase: "pre", age: "", gender: "", currentPage: 0, answers: {}, shuffleOrder: [], startTime: null };
+    state = {
+      phase: "pre",
+      age: "",
+      gender: "",
+      currentPage: 0,
+      answers: {},
+      shuffleOrder: [],
+      startTime: null,
+      fixtureId: null,
+      debugShort: false,
+      debugManualDone: false,
+    };
     renderPre();
   });
 }
@@ -617,6 +652,24 @@ function renderCalculating() {
 // INIT
 // ============================================================
 function init() {
+  if (__activeFixtureId || __debugMode) {
+    clearState();
+    state = {
+      phase: "pre",
+      age: "",
+      gender: "",
+      currentPage: 0,
+      answers: {},
+      shuffleOrder: [],
+      startTime: null,
+      fixtureId: __activeFixtureId,
+      debugShort: __debugMode,
+      debugManualDone: false,
+    };
+    renderPre();
+    return;
+  }
+
   const saved = loadState();
   if (saved && saved.phase === "assess" && Object.keys(saved.answers || {}).length > 0) {
     renderResumeModal(saved);
