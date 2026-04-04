@@ -58,7 +58,7 @@
 // ============================================================
 // IPIP-NEO-120 ITEMS — Johnson (2014)
 // ============================================================
-const ITEMS = [
+window.UNSTUCK_ITEMS = [
   // NEUROTICISM (N)
   // Facet 1: Anxiety
   { num: 1, text: "Worry about things", domain: "N", facet: 1, keyed: "plus" },
@@ -228,11 +228,9 @@ function clampLikert(n) {
   return Math.max(1, Math.min(5, Math.round(Number(n))));
 }
 
-window.UNSTUCK_ITEMS = ITEMS;
-
 window.buildFixtureAnswersFromFacetMeans = function (facetMeans) {
   const answers = {};
-  for (const item of ITEMS) {
+  for (const item of window.UNSTUCK_ITEMS) {
     const code = normalizeFacetKey(item.domain, item.facet);
     const T = facetMeans[code];
     if (T === undefined) {
