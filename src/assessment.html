@@ -510,6 +510,9 @@ function renderAssessment() {
   const end = start + ITEMS_PER_PAGE;
   const pageItemIndices = state.shuffleOrder.slice(start, end);
   const pageItems = pageItemIndices.map(i => ITEMS[i]);
+  const debugManualPhase =
+    state.debugShort && !state.debugManualDone && pageIndex === 0;
+  const visibleItems = debugManualPhase ? pageItems.slice(0, 5) : pageItems;
   const percent = Math.round((pageIndex / TOTAL_PAGES) * 100);
   const answeredTotal = Object.keys(state.answers).length;
   const minutesPerItem = 0.083; // ~5 seconds per item
@@ -530,7 +533,7 @@ function renderAssessment() {
     </div>
 
     <div class="questions-page" id="questions-container">
-      ${pageItems.map((item, idx) => `
+      ${visibleItems.map((item, idx) => `
         <div class="question-block" data-item-num="${item.num}">
           <div class="question__number">${start + idx + 1} of 120</div>
           <div class="question__text">I ${item.text.charAt(0).toLowerCase() + item.text.slice(1)}.</div>
@@ -578,7 +581,9 @@ function renderAssessment() {
 
   // Check if all items on page are answered
   function checkPageComplete() {
-    const allAnswered = pageItems.every(item => state.answers[item.num] !== undefined);
+    const allAnswered = visibleItems.every(
+      (item) => state.answers[item.num] !== undefined
+    );
     document.getElementById("next-btn").disabled = !allAnswered;
   }
   checkPageComplete();
@@ -586,6 +591,12 @@ function renderAssessment() {
   // Next button
   document.getElementById("next-btn").addEventListener("click", () => {
     saveState();
+    if (debugManualPhase) {
+      state.debugManualDone = true;
+      saveState();
+      renderAssessment();
+      return;
+    }
     if (pageIndex === TOTAL_PAGES - 1) {
       // Assessment complete
       state.phase = "calculating";
