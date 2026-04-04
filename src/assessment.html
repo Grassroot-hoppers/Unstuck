@@ -220,6 +220,37 @@ const ITEMS = [
   { num: 120, text: "Jump into things without thinking", domain: "C", facet: 6, keyed: "minus" }
 ];
 
+function normalizeFacetKey(domain, facetNum) {
+  return domain + String(facetNum);
+}
+
+function clampLikert(n) {
+  return Math.max(1, Math.min(5, Math.round(Number(n))));
+}
+
+window.UNSTUCK_ITEMS = ITEMS;
+
+window.buildFixtureAnswersFromFacetMeans = function (facetMeans) {
+  const answers = {};
+  for (const item of ITEMS) {
+    const code = normalizeFacetKey(item.domain, item.facet);
+    const T = facetMeans[code];
+    if (T === undefined) {
+      throw new Error('Missing facet mean for ' + code);
+    }
+    const r =
+      item.keyed === 'minus'
+        ? clampLikert(6 - T)
+        : clampLikert(T);
+    answers[item.num] = r;
+  }
+  return answers;
+};
+</script>
+<script src="test-personas.js"></script>
+<script>
+const ITEMS = window.UNSTUCK_ITEMS;
+
 // ============================================================
 // RESPONSE OPTIONS
 // ============================================================
