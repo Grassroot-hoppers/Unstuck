@@ -14,16 +14,17 @@ Unstuck is a science-backed personality assessment based on the [IPIP-NEO-120](h
 - Scores across 5 personality domains and 30 facets
 - Results framed through an energy/vitality lens
 - Radar chart visualization
-- Shareable results URL (no server needed)
-- PDF download
+- Shareable results via short permalink (`results.html?id=…`) backed by optional [Supabase](https://supabase.com/) storage, with **URL hash fallback** (base64-encoded payload) when loading without a saved ID
+- Deterministic **interpretation engine** on the results page (cross-facet rules, domain templates, research framing — see [ROADMAP](ROADMAP.md))
+- PDF download (browser print)
 - English + French (items pre-translated)
 
 ## What it doesn't do
 
-- No tracking. No analytics. No cookies.
-- No accounts required.
-- No data sent to any server.
-- Everything runs in your browser.
+- No accounts, no passwords, no marketing analytics stack.
+- No clinical diagnosis — self-discovery only.
+- **Supabase:** When configured, completing the assessment sends score payloads to your Supabase project so results can be reopened via `?id=`. That is intentional, optional to disable for a fork (see `src/supabase-results.js` and [docs/supabase-setup.md](docs/supabase-setup.md)).
+- Third-party CDNs: Chart.js, Google Fonts, and (when used) Supabase client JS load from the network.
 
 ---
 
@@ -48,20 +49,20 @@ Unstuck is a science-backed personality assessment based on the [IPIP-NEO-120](h
 
 ## Tech stack
 
-This is a **static site**. No backend. No database. No build step.
+This is a **static site**: **no build step**, **no `package.json`**. Pages are plain HTML, CSS, and JavaScript.
 
 | Component | Technology |
 |---|---|
 | Frontend | HTML, CSS, vanilla JavaScript |
-| Charts | [Chart.js](https://www.chartjs.org/) (CDN) |
+| Charts | [Chart.js](https://www.chartjs.org/) (CDN UMD bundle) |
 | Fonts | Google Fonts (DM Serif Display, Inter, JetBrains Mono) |
-| Scoring | Client-side JavaScript |
-| Storage | localStorage (browser) |
-| Results sharing | Base64-encoded URL hash |
+| Scoring & interpretation | Client-side JS; **results** load `src/engine/*` via **ES modules** (`<script type="module">` in `results.html`) |
+| Persistence | [Supabase](https://supabase.com/) (optional; anon key + URL in `src/supabase-results.js`); **hash fallback** still decodes in-page results |
+| Results sharing | Primary: `?id=` short ID; **fallback:** long base64 fragment in the URL hash |
 | PDF | Browser print / `@media print` stylesheet |
-| Hosting | Any static hosting (Vercel, Netlify, GitHub Pages, etc.) |
+| Hosting | Any static host (Vercel, Netlify, GitHub Pages, etc.) |
 
-Zero dependencies. Zero build tools. Open `index.html` in a browser and it works.
+**Local development:** The **full path** (assessment → **results with the engine**) must be served over **HTTP** or **HTTPS**. Browsers block ES module imports from `file://`, so opening `results.html` directly from disk will not load the engine. Use a local static server (see below).
 
 ---
 
@@ -70,16 +71,24 @@ Zero dependencies. Zero build tools. Open `index.html` in a browser and it works
 ```
 unstuck/
 ├── README.md
-├── LICENSE              (AGPL-3.0)
+├── ROADMAP.md
+├── LICENSE                  (AGPL-3.0)
 ├── CONTRIBUTING.md
+├── ARCHITECTURE.md
 ├── src/
-│   ├── index.html       (Landing page)
-│   ├── assessment.html  (The 120-question assessment)
-│   ├── results.html     (Results page with radar chart)
-│   └── styles.css       (Shared design system)
+│   ├── index.html           Landing page
+│   ├── assessment.html      120-question flow
+│   ├── results.html         Results + interpretation engine (ES modules)
+│   ├── debug.html           Testing tools / fixtures
+│   ├── styles.css           Shared design system
+│   ├── supabase-results.js  Supabase URL/key + small helpers
+│   ├── test-personas.js     Fixture helpers for browser testing
+│   └── engine/              Interpretation engine (scoring, rules, templates, norms, interpretive/)
 └── docs/
-    ├── scoring.md       (How scoring works)
-    └── items.md         (All 120 items with scoring keys)
+    ├── supabase-setup.md
+    ├── scoring.md
+    ├── paywall-setup.md     (deferred product — see ROADMAP)
+    └── superpowers/         Design specs & implementation plans
 ```
 
 ---
@@ -89,28 +98,28 @@ unstuck/
 ```bash
 git clone https://github.com/Grassroot-hoppers/unstuck.git
 cd unstuck/src
-# Open in browser — that's it
-open index.html
-# Or use any local server
-python3 -m http.server 8000
+python -m http.server 8000
+# Open http://localhost:8000/index.html — use the assessment through to results.html
 ```
+
+Opening HTML files via `file://` may work for **some** pages, but it is **not supported** for the complete assessment → results flow because **`results.html` imports `./engine/engine.js` as a module**.
 
 ---
 
 ## Deploy
 
-This is a static site. Deploy to any static hosting:
+Static hosting only: deploy the **`src/`** directory (or equivalent).
 
 **Vercel:**
 ```bash
 cd src && vercel --prod
 ```
 
-**Netlify:**
+**Netlify:**  
 Drag the `src/` folder to [app.netlify.com/drop](https://app.netlify.com/drop)
 
-**GitHub Pages:**
-Enable Pages on the repo, set source to `src/` folder.
+**GitHub Pages:**  
+Enable Pages and set the publish source to the `src/` folder (or your host’s equivalent).
 
 ---
 
@@ -118,7 +127,7 @@ Enable Pages on the repo, set source to `src/` folder.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Translations, bug fixes, and accessibility improvements are welcome. The interpretation texts (the vitality-framed descriptions for each domain/facet) are a core part of the project's identity — please discuss changes to these in an issue first.
+Translations, bug fixes, and accessibility improvements are welcome. Interpretation copy and rule logic are core to the product — please open an issue before large changes there.
 
 ---
 

@@ -1,7 +1,7 @@
 # Design: Tech debt — documentation, ROADMAP truth, dead paywall CSS
 
 **Date:** 2026-04-04  
-**Status:** Approved — ready for implementation plan  
+**Status:** Implemented (2026-04-04)  
 **Scope:** Single cohesive change set (docs + one stylesheet deletion + one HTML token fix)
 
 ## Problem

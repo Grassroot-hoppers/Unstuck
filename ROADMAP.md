@@ -1,121 +1,112 @@
 # Roadmap
 
-## Current: v0.1 — The Assessment Works
+## Shipped through v0.5
 
-**Status: SHIPPED** ✓
-
-What's live:
-- 120-question IPIP-NEO-120 assessment
-- Client-side scoring (5 domains, 30 facets)
-- Radar chart + domain interpretations (15 texts)
-- Shareable results via URL hash
-- PDF download via print stylesheet
-- GitHub Pages deployment
-- Zero backend, zero cost
-
-What's not:
-- Results not permanently stored (URL hash only)
-- No Supabase
-- No accounts
-- No payment/access codes
-- Facet-level interpretation texts (30 facets × 3 levels = 90 texts) not written yet
-- No French interpretation texts
+**Current stack:** static HTML/CSS/JS, Supabase for persistent result rows and short `?id=` links, hash fallback for in-URL payloads, and a **module-based interpretation engine** on `results.html`.
 
 ---
 
-## Next: v0.2 — Permanent Results
+## v0.1 — The Assessment Works
+
+**Status: SHIPPED** ✓ — **Historical baseline** (superseded by v0.2+; kept for context).
+
+What that release established:
+- 120-question IPIP-NEO-120 assessment
+- Client-side scoring (5 domains, 30 facets)
+- Radar chart + early domain-level copy
+- Shareable results via URL hash
+- PDF via print stylesheet
+- Zero backend in the original sense (before Supabase)
+
+---
+
+## v0.2 — Permanent Results
+
+**Status: SHIPPED** ✓
 
 **Goal:** Results saved to Supabase. Short, clean URLs. Retrievable anytime.
 
 Tasks:
-- [ ] Set up Supabase project (free tier)
-- [ ] Create `results` table (see [docs/supabase-setup.md](docs/supabase-setup.md))
-- [ ] Add Supabase client to assessment.html and results.html
-- [ ] Generate short IDs on completion, save to Supabase
-- [ ] results.html loads from `?id=` parameter OR falls back to hash
-- [ ] Test: complete assessment → get short URL → open in different browser → results load
-
-Estimated effort: 1-2 days
+- [x] Set up Supabase project (free tier)
+- [x] Create `results` table (see [docs/supabase-setup.md](docs/supabase-setup.md))
+- [x] Add Supabase client to assessment.html and results.html
+- [x] Generate short IDs on completion, save to Supabase
+- [x] results.html loads from `?id=` parameter OR falls back to hash
+- [x] Test: complete assessment → get short URL → open in different browser → results load
 
 ---
 
-## Then: v0.3 — Research Pool + Opt-in Data
+## v0.3 — Research Pool + Opt-in Data
+
+**Status: SHIPPED** ✓ (core); optional analytics UX can grow over time
 
 **Goal:** Anonymized aggregate personality data for survival bias research.
 
 Tasks:
-- [ ] Add opt-in toggle on results page: "Help improve Unstuck — share your anonymized scores"
-- [ ] Create `research_pool` view in Supabase (anonymized, no user link)
-- [ ] Build a simple admin dashboard or SQL query to view aggregate distributions
-- [ ] First analysis: "What does the personality distribution of Unstuck users look like?"
-
-Estimated effort: 1 day
+- [x] Add opt-in UI on results page for sharing anonymized scores with the research pool
+- [x] Document `research_pool` view in Supabase (see [docs/supabase-setup.md](docs/supabase-setup.md))
+- [ ] Simple admin dashboard or saved SQL reports for aggregate distributions (operators can use Supabase SQL today)
+- [ ] First published analysis: "What does the personality distribution of Unstuck users look like?"
 
 ---
 
-## Then: v0.4 — Payment + Access Codes
+## v0.4 — Payment + Access Codes
 
-**Goal:** €5 one-time payment via Stripe OR free access code.
+**Status: DEFERRED** ⏸ (not cancelled)
 
-Tasks:
-- [ ] Set up Stripe account, create "Unstuck Assessment" product (€5 one-time)
-- [ ] Add Stripe Checkout redirect before assessment starts
-- [ ] Create `access_codes` table in Supabase
-- [ ] Build code-entry UI: "I have a code" → validate → grant access
-- [ ] Stripe success webhook → mark as paid (or handle client-side via redirect)
-- [ ] Generate first batch of access codes for friends/workshops
+**Why:** Shelved deliberately so v0.5 (interpretation engine) could ship and be validated **without** paywall friction. Stripe/access-code work remains a plausible future milestone but is **not** committed as the immediate next step.
 
-Decision needed: Assessment free + Steps 2-5 paid? Or assessment itself behind paywall?
+**Original direction:** €5 one-time payment via OR access code; assessment vs steps paid TBD.
 
-Estimated effort: 2-3 days
+Reference: [docs/paywall-setup.md](docs/paywall-setup.md) describes an older integration sketch — treat as archival if the feature returns.
 
 ---
 
-## Then: v0.5 — Facet Interpretation Texts
+## v0.5 — Interpretation Engine (cross-facet patterns)
 
-**Goal:** Full interpretation for all 30 facets, not just 5 domains.
+**Status: SHIPPED** ✓
 
-Tasks:
-- [ ] Write 90 facet interpretation texts (30 facets × 3 levels)
-- [ ] In the Unstuck voice — warm, direct, energy-framed
-- [ ] Add to results.html under each facet card
-- [ ] Review with test users — do the texts resonate?
+**Goal:** Rich, deterministic interpretation beyond five domain blurbs — without hand-writing 90 independent facet blurbs.
 
-Estimated effort: 3-5 days (mostly writing, not code)
+**What shipped:**
+- **Cross-facet pattern engine** — 25 priority rules in `src/engine/rules.js` (15 cross-connection rules, 10 single-facet flags)
+- **Domain-level interpretive templates** orchestrated from `src/engine/engine.js` (`runEngine`)
+- **Research blocks** and calibrated interpretive layers (see [docs/superpowers/specs/2026-04-04-calibrated-interpretive-engine-design.md](docs/superpowers/specs/2026-04-04-calibrated-interpretive-engine-design.md))
+
+The earlier plan (“30 facets × 3 levels = 90 static texts”) was superseded by this architecture.
 
 ---
 
-## Then: v0.6 — French Translation
+## v0.6 — French Translation
 
 **Goal:** Full site in French (Belgium audience).
 
 Tasks:
-- [ ] French items already exist in the IPIP-NEO package — integrate them
-- [ ] Translate all 15 domain interpretation texts
-- [ ] Translate all 90 facet interpretation texts (if done)
+- [ ] French items already exist in the IPIP-NEO package — integrate end-to-end if gaps remain
+- [ ] Translate domain-level interpretation / engine-facing copy as needed for FR
 - [ ] Translate landing page, assessment UI, results page chrome
 - [ ] Language toggle (EN/FR) that persists
 
-Estimated effort: 3-5 days
+Estimated effort: 3–5 days
 
 ---
 
 ## v1.0 — The Full Product
 
-**Goal:** The complete first version — assessment + permanent results + payment + full interpretations + French.
+**Goal:** A cohesive “1.0” story: assessment, permanent results, full interpretation experience, French, and optional monetization **if** product priorities bring back v0.4-class flows.
 
-What v1.0 includes:
-- Everything from v0.1-v0.6
-- Professional, polished results page
-- Smooth payment/code flow
-- Email receipt of results (Supabase Edge Function + Resend)
-- "What's Next" section pointing to Steps 2-5 (coming in v2)
+What v1.0 may include:
+- Everything intentionally kept from v0.1–v0.6 above
+- Polished results experience and onboarding
+- If paywall returns: smooth payment/code flow (revisit deferred v0.4)
+- Email receipt of results (Supabase Edge Function + provider such as Resend)
+- “What's Next” section pointing to Steps 2–5 (directionally v2)
 
 ---
 
 ## Beyond v1: The Journey
 
-These are future phases. Not committed. Noted for direction.
+Future phases — not committed; direction only.
 
 **v1.5 — Steps 2-5 (The Journey)**
 - Step 2: Past Audit (Pennebaker writing exercises, Hollis questions)
@@ -141,7 +132,7 @@ These are future phases. Not committed. Noted for direction.
 From the [Grassroots Hoppers hackathon](https://grassroothopper.com):
 
 1. **Ship before extending.** Each version must work completely before the next starts.
-2. **One feature at a time.** Never build v0.3 and v0.4 simultaneously.
+2. **One feature at a time.** Avoid parallelizing unrelated product surfaces.
 3. **Stay before the wall.** If the codebase gets complex enough that AI can't reason about it, stop and simplify.
 4. **Paper before code.** Each version has a plan written before building starts.
-5. **Test with real users.** Ship v0.2 and get 10 people to use it before starting v0.3.
+5. **Test with real users.** Ship, observe, then plan the next slice.
