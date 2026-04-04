@@ -339,6 +339,74 @@ function clearState() {
   delete memoryStore[STORAGE_KEY];
 }
 
+const AUTOPLAY_CLICK_GAP_MS = 40;
+const PAGE_DWELL_MS = 1000;
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function getAnswersForAutoplay() {
+  if (state.fixtureId) {
+    return UnstuckTestPersonas.getFixtureAnswers(state.fixtureId);
+  }
+  const neutral = 3;
+  const map = {};
+  for (const it of ITEMS) {
+    map[it.num] = neutral;
+  }
+  return map;
+}
+
+async function runAutoplayForVisiblePage(answersMap) {
+  const container = document.getElementById("questions-container");
+  if (!container) return;
+
+  const blocks = container.querySelectorAll(".question-block");
+  for (const block of blocks) {
+    const itemNum = parseInt(block.getAttribute("data-item-num"), 10);
+    const target = answersMap[itemNum];
+    const btn = block.querySelector(
+      `.option-btn[data-item="${itemNum}"][data-value="${target}"]`
+    );
+    if (btn) {
+      btn.click();
+      await sleep(AUTOPLAY_CLICK_GAP_MS);
+    }
+  }
+
+  await sleep(PAGE_DWELL_MS);
+
+  const nextBtn = document.getElementById("next-btn");
+  if (nextBtn && !nextBtn.disabled) {
+    nextBtn.click();
+  }
+}
+
+function startAutoplayIfNeeded() {
+  const shouldRunFixture =
+    state.fixtureId && state.phase === "assess" && state.currentPage === 0;
+  const page0Auto =
+    state.debugShort &&
+    state.debugManualDone &&
+    state.phase === "assess" &&
+    state.currentPage === 0;
+  const pageAuto =
+    state.debugShort &&
+    state.debugManualDone &&
+    state.phase === "assess" &&
+    state.currentPage > 0;
+  const fixtureRest =
+    state.fixtureId && state.phase === "assess" && state.currentPage > 0;
+
+  if (!(shouldRunFixture || page0Auto || pageAuto || fixtureRest)) return;
+
+  const answersMap = getAnswersForAutoplay();
+  runAutoplayForVisiblePage(answersMap).catch((e) =>
+    console.error("Autoplay failed", e)
+  );
+}
+
 // ============================================================
 // SCORING
 // ============================================================
@@ -618,6 +686,8 @@ function renderAssessment() {
       renderAssessment();
     });
   }
+
+  startAutoplayIfNeeded();
 }
 
 // ============================================================
