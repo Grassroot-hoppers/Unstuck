@@ -24,6 +24,16 @@ Thanks for wanting to help.
 4. Test locally (open `index.html` in a browser)
 5. Submit a pull request with a clear description of what and why
 
+## Developer testing
+
+For manual QA of the assessment shell and results UI without Playwright:
+
+- Open **`src/debug.html`** for a small hub with links to named fixtures and the short manual path.
+- **`assessment.html?fixture=<id>`** — runs the real assessment with preset demographics (defaults **26–30** / **male** for normed results) and DOM replay through all 120 items. Valid ids: `trump`, `jobs`, `tyson`, `ross`, `cobain`. If both `fixture` and `debug` are present, **fixture wins**.
+- **`assessment.html?debug=1`** — answer five items on page 1, then the remainder auto-fills with neutral (3) clicks and continues through results.
+
+Fixtures are **illustrative** eyeball checks only, not claims about real people. After a run, confirm results load and the primary UI shows no `NaN` or broken layout.
+
 ## Code style
 
 - Vanilla HTML, CSS, JavaScript. No frameworks. No build tools.
