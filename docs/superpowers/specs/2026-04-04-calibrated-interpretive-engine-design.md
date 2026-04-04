@@ -1,6 +1,6 @@
 # Design: Calibrated interpretive engine (IPIP-NEO-120)
 
-**Status:** Draft — ready for review before implementation planning  
+**Status:** Approved for implementation planning  
 **Date:** 2026-04-04  
 **Context:** Unstuck already scores the IPIP-NEO-120 deterministically (`scoring.js`), fires rules (`rules.js`), and renders copy from templates (`templates.js`). Reliability is partially encoded (`alpha`, `REJECTED_FACETS`, `getConfidenceTier`, `DOMAIN_FACETS`). The **voice** of the product still over-asserts (“profiler”) and buries uncertainty. This design adds an **interpretive layer** that turns scores into a **typed, confidence-aware narrative contract**, with **non-clinical default** copy and **opt-in research framing**.
 
@@ -10,7 +10,7 @@
 2. **Reliability as prose, not only warnings** — Domain-led interpretation; facets tiered into **core / supporting / tentative** rhetorical classes derived from **measurement tier + role + within-domain scatter**, not conflated with gold/silver/bronze alone.
 3. **Trade-offs over verdicts** — Each domain (and strong patterns) frames **upside vs cost**; patterns add **where it helps / where it backfires / what tends to balance it**.
 4. **Stop pseudo-clinical overreach by default** — Describe **behavioral costs** before any analogy; avoid disorder-forward lead sentences. **Opt-in (A)** exposes correlation-level “research framing” for users who want it.
-5. **Openness without over-claim** — Split Openness into **channels** (aesthetic, experiential, cognitive/intellect, value flexibility) with **per-channel confidence**; call out **uneven channels** explicitly.
+5. **Openness without over-claim** — Use **named channels** only where multi-facet grouping adds interpretive meaning (aesthetic, cognitive/intellect, value flexibility); treat **O4 (Adventurousness)** as a **strong domain-level facet** outside those channels; treat **O3** as **ambiguous** vs the broad O factor; **per-channel confidence** and **uneven channel** callouts remain first-class.
 6. **Informant / self-report honesty** — Surface **observer-vulnerable** notes on selected facets (no second questionnaire required).
 7. **Richer language model by default** — Encode **frequency**, **context**, **expression channel** (felt vs expressed), and **regulation** (impulse vs action) as first-class slots so apparent contradictions are normal, not edge cases.
 
@@ -66,22 +66,26 @@ All **facet → measurement tier**, **rejection sets**, **domain facet lists**, 
 
 ## Q2 — Openness channels
 
-- **Channel membership** for IPIP-120 is **static per instrument config** (example mapping for discussion, final labels in implementation):
-  - **Aesthetic:** O1, O2  
-  - **Experiential:** O4  
-  - **Cognitive / intellect:** O5  
-  - **Value flexibility:** O6 (when not rejected for a given use — today O6 is rejected for rules/domain mean; **facet table** may still show raw with **tentative** channel confidence)  
-  - **O3 (Emotionality):** treat as **weak / ambiguous** channel marker — low **domain coherence**; narrative should not assume O3 tracks “Openness” the same way as O5.
+**Chosen mapping (IPIP-120):** Named channels are reserved for groupings where **multiple facets** support divergence logic inside the channel. **O4 (Adventurousness)** is treated as an **unclassified but reliable domain-representative facet** (consistent loadings on the broad O factor rather than a sub-cluster); copy addresses it in the **domain narrative or facet row**, not inside a single-facet “channel.”
 
-- **Per-channel confidence** is **derived**: from measurement tiers of facets in that channel, domain scatter on **O**, and whether facets are rejected for interpretation. Templates **suppress or soften** a channel when confidence is low.
+- **Aesthetic channel:** O1, O2  
+- **Cognitive / intellect channel:** O5  
+- **Value flexibility channel:** O6 (today O6 is rejected for rules/domain mean in `normative-data.js`; **facet table** may still show raw with **tentative** interpretation)  
+- **Domain-level facet (not a channel):** O4 — interpret like other strong facets, without forcing a channel wrapper  
+- **Ambiguous vs broad Openness:** O3 (Emotionality) — low **domain coherence**; narrative must not assume O3 tracks “Openness” like O5 or O4
+
+**Per-channel confidence** is **derived** from measurement tiers of facets in that channel, domain scatter on **O**, and rejection flags. Templates **suppress or soften** a channel when confidence is low.
 
 ## Q3 — Action-oriented “balance”
 
 Pattern objects carry:
 
 - **`balanceHint`** (curated string or template key) per **`ruleId`** for v1 voice control.
-- **`balanceFacetRefs`** (optional ranked `FacetCode[]`) when a **deterministic heuristic** finds a plausible offsetting facet with **sufficient tier** (never use a bronze/rejected facet to “fix” a gold-backed claim).
-- Renderer may show **curated only**, **derived only** when curated absent, or **both** (curated lead sentence + derived specifics) — pick one policy in implementation plan; default recommendation: **curated default + derived augment when confidence high**.
+- **`balanceFacetRefs`** (optional ranked `FacetCode[]`) when a **deterministic heuristic** finds a plausible offsetting facet.
+
+**Tier floor (normative):** A facet code is **eligible** to appear in `balanceFacetRefs` only if its **`confidenceTier` is `silver` or `gold`**. **`bronze` and `rejected` candidates are never surfaced** in balance copy. If no candidate meets the floor, **omit `balanceFacetRefs` entirely** (curated `balanceHint` may still appear).
+
+**Policy (resolved):** **Curated default** + **derived augment** when **both** (a) at least one balance candidate is **silver or above**, and (b) the pattern’s **ingredient** facets used for the derived logic are also **silver or above** where they participate in the augment. If derived logic would only produce **bronze** (or weaker) candidates, **suppress derived augment completely** — do not weaken the floor to “not rejected.”
 
 ## Signal classification (rhetorical vs measurement)
 
@@ -100,9 +104,28 @@ Keep **two orthogonal axes**:
 
 Exact inputs for `rhetoricalSignalClass` are implementation details but **must** incorporate **within-domain scatter** (`S` from `scoreProfile`) so lumpy domains default to “uneven profile” language.
 
+### `proseRegister` — domain vs facet (no inheritance)
+
+- **`domains[*].proseRegister`** governs **only** the domain-level paragraph(s) for that domain.
+- **`facets[*].proseRegister`** (on each facet interpretation row) governs **only** that facet’s copy.
+- **No inheritance** between domain and facet: a domain may be **`direct`** while a constituent facet is **`exploratory`** (e.g. high O domain summary vs tentative O3 row). Template authors **must not** copy domain register onto facet rows by default.
+
 ## `InterpretiveReport` — structural sketch
 
 The engine produces **one object**. UI and template renderers consume it. **`researchMode` is not stored** on the object; it filters **which optional fields** are turned into DOM.
+
+**Facet placement:** The **authoritative** facet interpretations for rendering a domain section live under **`domains[code].facets`** (`FacetInterpretation[]`). An optional **top-level index** (e.g. `facetByCode: Map` or `Record`) may duplicate references for **lookup by code** only — domain-scoped arrays are the source of truth for section rendering (avoids filter-by-domain at every call site).
+
+### `ContextTag` — v1 enum (closed set)
+
+Template and engine code **must** use **only** these literals in v1; anything else waits for v2:
+
+- `under_pressure`
+- `in_groups`
+- `in_conflict`
+- `intimate_settings`
+- `at_work`
+- `in_close_relationships`
 
 ```text
 InterpretiveReport {
@@ -111,6 +134,9 @@ InterpretiveReport {
   invariantDisclaimer: { textKey: 'big_five_descriptive_not_diagnostic' }
     // Renderer maps textKey to fixed string; engine does not embed locale strings if you later i18n.
 
+  facetByCode?: Record<FacetCode, FacetInterpretation>
+    // Optional convenience index; if present, entries should match domain-nested facets.
+
   domains: {
     N | E | O | A | C: {
       domainCode
@@ -118,21 +144,16 @@ InterpretiveReport {
       signalClass: 'core' | 'supporting' | 'tentative'
       proseRegister: 'direct' | 'hedged' | 'exploratory'
       tradeOff: { upside: SlotRef | string, cost: SlotRef | string }
-      contexts: ContextTag[]    // e.g. 'under_pressure', 'in_groups', 'in_conflict', 'intimate_settings'
+      contexts: ContextTag[]   // v1: only the six literals above
       narrativeSlots: { ... }   // implementation: refs into template registry
-      researchBlock?: {          // optional payload; render only if researchMode
-        summary: SlotRef
-        citations: CitationRef[]
-      }
+      facets: FacetInterpretation[]
+        // Authoritative list for this domain; includes observer flags, facet proseRegister, etc.
+      // TODO(v2): researchBlock on domain narratives — deferred; v1 uses pattern-level researchBlock only.
     }
   }
 
-  facets: FacetInterpretation[]
-    // Prefer annotating existing facet-table rows by `facetCode` rather than duplicating raw numbers.
-
-  opennessChannels?: {         // present when instrument + domain O
+  opennessChannels?: {         // present when instrument + domain O; O4 is NOT a channel
     aesthetic: ChannelInterpretation
-    experiential: ChannelInterpretation
     cognitive: ChannelInterpretation
     values?: ChannelInterpretation
     // Each: { scoreSummary, proseRegister, signalClass, unevenAgainstDomain: boolean }
@@ -173,7 +194,8 @@ InterpretiveReport {
 
 Authoring list for “self-report may diverge from how others see you” notes (exact wording in template registry):
 
-- A1 Trust, A2 Morality, A3 Altruism, A6 Sympathy, A5 Modesty, N2 Anger, C5 Self-Discipline (and others as evidence warrants).
+- A1 Trust, A2 Morality, A3 Altruism, A6 Sympathy, A5 Modesty, N2 Anger, C5 Self-Discipline, **E3 Assertiveness** — self–observer agreement on assertiveness is often weak; high Neuroticism can track “felt assertiveness” vs perceived dominance, and low N the reverse. E3 is also a **frequent pattern driver** (`disagreeable_leader`, etc.), so a divergence note here has high product value.
+- (Extend list in v2 as evidence warrants.)
 
 Implementation attaches **`observerNotes`** on **facet** entries and/or **patterns** that lean heavily on those facets.
 
@@ -193,11 +215,21 @@ Out of scope for this document’s **core contract**, but expected:
 3. **Rejected facets** — O6/O3 rows (if shown) never drive **core** claims; prose stays **exploratory**.
 4. **Regression** — Same `rawScores` → same `InterpretiveReport` object (determinism); only renderer differs by `researchMode`.
 
-## Open decisions (implementation plan)
+## Resolved decisions (implementation plan)
 
-- Single policy for **balance**: curated-only vs curated+derived (recommendation: **both** with tier gate on derived).
-- Whether **`domains[*].researchBlock`** is v1 or deferred (only **pattern-level** research blocks in v1 is acceptable to reduce scope).
+| Topic | Resolution |
+|-------|------------|
+| **Balance copy** | Curated **`balanceHint` default** + **derived augment** only when **silver+** candidates exist for `balanceFacetRefs` **and** participating ingredient facets for that augment are **silver+**. Otherwise derived augment **omitted**; bronze never drives balance text. |
+| **Domain `researchBlock`** | **v1:** **pattern-level `researchBlock` only.** Domain-level research blocks deferred to **v2** (would imply 5×2 clinical summary scope before research-mode UX is validated). Schema comment: `// TODO(v2): domain-level researchBlock` on `domains[*]` (see sketch above). |
+
+## Suggested implementation tranche order
+
+1. **Instrument config wrapper** + facet **tier / classification pure functions** (isolate IPIP-120 constants behind `instrumentId`).
+2. **`InterpretiveReport` builder** + **fixture-backed tests** (determinism, tier floors, nested `domains[*].facets`).
+3. **Template migration** starting with **Agreeableness** and **Openness** (highest over-assertion today).
+4. **`researchBlock` extraction** from `templates.js` into registry + pattern-only research rendering.
+5. **UI:** invariant footer + **researchMode** toggle wiring (session + remember).
 
 ---
 
-**Next step:** After you annotate or approve this file, use the **writing-plans** protocol to break implementation into tasks (interpreter module, template migration tranche, results UI footer + toggle, content audit of `templates.js`).
+**Next step:** Use the **writing-plans** protocol to break the above into tasks with file paths and verification steps.
