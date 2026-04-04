@@ -35,6 +35,9 @@
  *   PMC6838776 — Fearless Dominance / Impulsive Antisociality
  */
 
+import { NORMS } from './normative-data.js';
+import { formatResearchAppendix } from './research-blocks.js';
+
 // Helper: describe position relative to 50
 function pos(p) {
   if (p >= 85) return 'very high';
@@ -44,6 +47,46 @@ function pos(p) {
   if (p >= 35) return 'slightly below mid';
   if (p >= 15) return 'below mid';
   return 'very low';
+}
+
+/**
+ * Openness: separate aesthetic / intellect / values channels; O4 called out separately; O3 ambiguous.
+ * @param {Record<string, number>} P
+ * @param {Record<string, number>} S
+ * @param {object | null} interpretive
+ */
+function opennessChannelNote(P, S, interpretive) {
+  if (!interpretive?.opennessChannels) return '';
+  const { aesthetic, cognitive, values } = interpretive.opennessChannels;
+  const line = (label, ch) => {
+    const bits = ch.facetCodes.map((code) => {
+      const lab = NORMS[code]?.label || code;
+      const pct = P[code];
+      return pct == null ? `${lab} (no percentile)` : `${lab} ${pct}pct`;
+    });
+    return `${label} — ${bits.join(', ')} (${ch.signalClass} signal).`;
+  };
+  const o4 = P.O4 != null ? `Adventurousness (O4) at ${P.O4}pct sits outside those channels and is worth reading on its own.` : '';
+  const o3 =
+    P.O3 != null
+      ? `Emotionality (O3) is a weaker marker of "general openness" on short forms — treat it as exploratory.`
+      : '';
+  const scatterNote =
+    (S.O ?? 0) >= 45
+      ? 'Your Openness facets diverge sharply, so the headline domain score is only a summary. '
+      : '';
+  return (
+    scatterNote +
+    [
+      line('Aesthetic / imaginative', aesthetic),
+      line('Ideas / intellect', cognitive),
+      line('Politics / convention (short scale — interpret tentatively)', values),
+      o4,
+      o3,
+    ]
+      .filter(Boolean)
+      .join(' ')
+  );
 }
 
 // ============================================================
@@ -90,27 +133,42 @@ export const DOMAIN_TEMPLATES = {
     very_high: (P, D) => `In a room of 100 people, only about ${100-D.E} would be more extraverted. You run on social energy — engagement, assertion, stimulation, positive emotion. At this level, the profile may show features documented in histrionic personality — the only personality disorder defined almost entirely by elevated Extraversion across all six facets. The specific facet pattern determines which parts of this drive are producing returns and which are costing more than they give back.`,
   },
   O: {
-    // T1 [SOURCE: Johnson low O; NEO PI-3 Problems in Living low O5]
-    very_low: (P, D) => `In a room of 100 people, about ${100-D.O} would be more open to experience. You prefer the concrete, the familiar, and the proven — "the plain, straightforward, and obvious over the complex, ambiguous, and subtle." The documented costs at the extreme: "Failure to appreciate or recognize new solutions; blanket rejection of creative or innovative ideas; repeated use of old, ineffective solutions to new problems; concrete thinking."`,
-
-    // T1 [SOURCE: Johnson low O; Jang 1996 — O is 61% heritable, highest of Big Five]
-    low: (P, D) => `In a room of 100 people, about ${100-D.O} would be more open to new experiences. You lean practical and conventional — abstract ideas and artistic pursuits aren't where your energy naturally goes. Openness is approximately 61% heritable — the most heritable of the Big Five domains — making this one of the most stable preferences in personality.`,
-
-    // T1 [SOURCE: Jang 1996 heritability; Roberts 2017 — O shows least intervention change; Costa & McCrae scatter]
-    below_mid: (P, D, S) => `In a room of 100 people, about ${100-D.O} would be more open to experience — you're on the more practical side but not dramatically closed. People at this level are "practical but willing to consider new approaches." Openness is the most heritable Big Five domain (61%) and showed the least change through intervention in a 207-study meta-analysis (d = .13). ${S.O >= 30 ? 'Your Openness facets have meaningful variation — some channels of openness are more active than others.' : ''}`,
-
-    // T1 [SOURCE: Johnson moderate-high O; Costa & McCrae 1995 scatter — O example] — 0% T3, no changes
-    above_mid: (P, D, S) => `In a room of 100 people, about ${D.O} would be less open to experience. You're drawn to ideas, beauty, or novelty more than most. ${S.O >= 30 ? 'Your Openness facets show a specific pattern worth looking at — your mind is not uniformly open in all directions.' : ''}`,
-
-    // T1 [SOURCE: Johnson high O; NEO PI-3 Problems in Living for O1, O4]
-    high: (P, D) => `In a room of 100 people, only about ${100-D.O} would be more open to experience. You're drawn to ideas, beauty, novelty, and emotional depth. Your mind is more active and more varied than most. The documented costs at the high end: "Confusion of reality and fantasy; distracting preoccupation with fantasies" and "unpredictability in plans and interests; unstable career path."`,
-
-    // T1 [SOURCE: NEO PI-3 Problems in Living; Costa & McCrae 1995 scatter example]
-    very_high: (P, D) => `In a room of 100 people, only about ${100-D.O} would be more open to experience. Your imagination, curiosity, aesthetic sensitivity, and intellectual appetite are near the ceiling. People scoring this high tend to have a vivid imagination and an active inner world that others find unusual. The documented cost: "Confusion of reality and fantasy; distracting preoccupation with fantasies; unpredictability in plans and interests." The specific pattern within your Openness matters — as Costa & McCrae note, instead of saying someone is "open to experience," it's more accurate to identify which specific channels of openness are most active.`,
+    // Behavioral-first; channels appended via interpretive (4th arg)
+    very_low: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, about ${100-D.O} would be more open to experience. You often prefer the concrete and familiar over the ambiguous — roles that reward stability, clear criteria, and stepwise change usually fit well. The trade-off is that novel or abstract paths may feel costly until the payoff is obvious.`;
+      const note = opennessChannelNote(P, S, interpretive);
+      return note ? `${base} ${note}` : base;
+    },
+    low: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, about ${100-D.O} would be more open to new experiences. You lean practical — arts, ideas for their own sake, or unconventional norms may not pull your attention the way they pull others'. Openness is among the more heritable domains (~61% in twin work), so this is often a stable preference rather than a blind spot to "fix."`;
+      const note = opennessChannelNote(P, S, interpretive);
+      return note ? `${base} ${note}` : base;
+    },
+    below_mid: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, about ${100-D.O} would be more open to experience — you're on the practical side without being closed off. Meta-analytic intervention work finds Openness changes least with therapy (small effects), which fits treating it as a preference to design around more than a skill deficit.`;
+      const tail = S.O >= 30 ? ' Facet spread matters: "open" can mean different things for aesthetics, ideas, risk-taking, and values.' : '';
+      const note = opennessChannelNote(P, S, interpretive);
+      return `${base}${tail}${note ? ` ${note}` : ''}`;
+    },
+    above_mid: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, about ${D.O} would be less open to experience. You're drawn to ideas, aesthetics, variety, or intellectual play more than most — often a strength for learning and innovation. The recurring cost is diffusion: too many threads, or impatience with routines others need.`;
+      const note = opennessChannelNote(P, S, interpretive);
+      return note ? `${base} ${note}` : base;
+    },
+    high: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, only about ${100-D.O} would be more open to experience. High openness often tracks curiosity, aesthetic sensitivity, and comfort with novelty — useful when problems are ambiguous. Under pressure it can show up as restlessness, skepticism toward "how we've always done it," or chasing new frames before finishing the last one.`;
+      const note = opennessChannelNote(P, S, interpretive);
+      return note ? `${base} ${note}` : base;
+    },
+    very_high: (P, D, S, interpretive) => {
+      const base = `In a room of 100 people, only about ${100-D.O} would be more open to experience. This usually means a strong pull toward imagination, ideas, beauty, and exploration — a genuine edge in creative and strategic work. The trade-off is maintaining follow-through and shared reality: very high openness can correlate with scattered priorities or friction with highly routine environments — context matters as much as the score.`;
+      const note = opennessChannelNote(P, S, interpretive);
+      return note ? `${base} ${note}` : base;
+    },
   },
   A: {
-    // T1 [SOURCE: Johnson very low A; Samuel & Widiger 2008 PD associations]
-    very_low: (P, D) => `In a room of 100 people, about ${100-D.A} would be more agreeable. You're competitive, skeptical, and direct — you prioritize your own judgment over social harmony. Very low agreeableness is associated with narcissistic (low A-Modesty r = −.37), antisocial (low A-Straightforwardness r = −.37), and paranoid (low A-Trust r = −.45) personality disorder features in meta-analytic research. That doesn't mean you have a disorder — it means these are the documented costs when low agreeableness isn't balanced by other traits.`,
+    // Non-clinical default; PD-correlation depth → research mode / research-blocks (patterns)
+    very_low: (P, D) => `In a room of 100 people, about ${100-D.A} would be more agreeable. You often prioritize candor, independence, and your own read on situations over automatic harmony. In practice that can mean sharp standards, fast disagreement, and low patience for perceived nonsense — strengths where clarity and negotiation matter. The trade-off is relationship load: trust, warmth, and cooperation can take longer to build, and friction can spike when others need reassurance before substance.`,
 
     // T1 [SOURCE: Johnson low A; Piedmont/WKU low A interpretation]
     low: (P, D) => `In a room of 100 people, about ${100-D.A} would be more agreeable. You lean tough-minded and independent. Compromise doesn't come naturally. Low scorers are described as "hardheaded, skeptical, proud, and competitive — they tend to express their anger directly." As the NEO interpretation manual notes, "the readiness to fight for one's convictions does have its place — in the courtroom, on the battlefield."`,
@@ -124,8 +182,8 @@ export const DOMAIN_TEMPLATES = {
     // T1 [SOURCE: Johnson high A; Coker et al. 2002 maladaptive high A; Samuel & Widiger Dependent PD] — 0% T3
     high: (P, D) => `In a room of 100 people, only about ${100-D.A} would be more agreeable. You're warm, trusting, and cooperative — people generally experience you as kind and accommodating. The shadow side of high agreeableness is real: difficulty saying no, vulnerability to exploitation, and a tendency to lose track of your own needs while attending to others'.`,
 
-    // T1 [SOURCE: Johnson very high A; Piedmont/WKU high A4; Samuel & Widiger Dependent PD features]
-    very_high: (P, D) => `In a room of 100 people, only about ${100-D.A} would be more agreeable. You prioritize others' needs, avoid conflict, and trust readily. Very high Agreeableness is associated with dependent personality features — high scorers are described as "trusting and gullible," "cooperative, meek, mild, and docile." The documented risk: people at this level are more easily exploited and may struggle to protect their own interests even when they see the problem clearly.`,
+    very_high: (P, D) =>
+      `In a room of 100 people, only about ${100-D.A} would be more agreeable. You prioritize others' needs, avoid conflict, and extend trust readily — a real strength for cohesion and care. The recurring cost is boundary strain: saying no, pushing back, or protecting your own time can feel disproportionately costly, and you may absorb more than your share until resentment or burnout surfaces.`,
   },
   C: {
     // T1 [SOURCE: Johnson very low C; Peterson O×C underachiever]
@@ -184,9 +242,9 @@ export const CROSS_TEMPLATES = {
     full: (P) => `[Full version: fearless dominance vs anxious sensation-seeking distinction, PMC6838776 data, burnout risk analysis]`,
   },
 
-  // T1 [SOURCE: ACER E×A "Leaders" verbatim; Piedmont/WKU low A4, high E3 descriptors]
   disagreeable_leader: {
-    teaser: (P) => `You take charge — only ${100-P.E3} in 100 would be more assertive. You don't back down — ${100-P.A4} would compromise more easily. And you manage how things are presented — ${100-P.A2} would be more straightforward. The ACER style graph calls this the "Leader" profile: "These people enjoy social situations as an arena in which they can shine. They prefer giving orders to taking them and believe they are particularly well suited to making decisions. They may be boastful and vain, but they also know how to get people to work together." Low scorers on compliance are described as "aggressive, prefer to compete rather than cooperate, and have no reluctance to express anger." Combined with high assertiveness: "dominant, forceful, and socially ascendant."`,
+    teaser: (P) =>
+      `You take charge — only ${100 - P.E3} in 100 would be more assertive. You resist easy compromise — ${100 - P.A4} would yield more readily. You're also comfortable shaping how things are framed — ${100 - P.A2} would be more plain-spoken. In practice this cluster often reads as decisive, forceful, and quick to challenge; it tends to help when stakes are execution and clarity, and to cost more when the work is alignment, repair, or shared ambiguity.`,
     full: (P) => `[Full version: E×A Leader style graph deep dive, Samuel & Widiger narcissistic proximity, assertiveness training evidence from Speed 2017]`,
   },
 
@@ -281,14 +339,14 @@ export const FLAG_TEMPLATES = {
     teaser: (P) => `Your orderliness is at ${P.C2} out of 100 — about ${100-P.C2} people keep more lists, maintain more routines, and have tidier systems than you. Low scorers are described as "haphazard, disorganized, and sloppy" — "unable to get organized and describe themselves as unmethodical." At the other extreme, high orderliness "carried to its extreme can be indicative of compulsive personality disorder." Research on choice architecture — modifying decision environments rather than relying on self-control — shows d = .43 effect sizes on behavior change across 200+ studies. "Decision structure interventions that modify decision environments are consistently more effective than decision information interventions."`,
   },
 
-  // T1 [SOURCE: Johnson A2; Samuel & Widiger NPD/ASPD/PPD correlations; Piedmont/WKU low A2]
   flag_A2_low: {
-    teaser: (P) => `Your straightforwardness is at ${P.A2} out of 100 — about ${100-P.A2} people would be less comfortable bending the truth or managing how information gets presented. People scoring low are described as "willing to manipulate others through flattery, craftiness, or deception — they view these tactics as necessary social skills." At the extreme: "cunning, manipulative, and deceptive." Low A-Straightforwardness is a documented marker across three personality disorders in meta-analytic research: narcissistic (r = −.31), antisocial (r = −.37), and paranoid (r = −.24). That doesn't make this a disorder — but it maps the territory where the costs accumulate.`,
+    teaser: (P) =>
+      `Your straightforwardness is at ${P.A2} out of 100 — about ${100 - P.A2} people would be more transparent and less strategic about how information is framed. You may frame, omit, or steer in ways that feel necessary socially but read as slick or evasive to others. The recurring cost is trust erosion when people feel managed rather than informed. This facet is especially vulnerable to self-presentation effects — compare with how trusted colleagues describe you.`,
   },
 
-  // T1 [SOURCE: Johnson A1; Samuel & Widiger Paranoid PD; Piedmont/WKU low A1] — was 20% T3
   flag_A1_low: {
-    teaser: (P) => `Your trust is at ${P.A1} out of 100 — about ${100-P.A1} people would give strangers more benefit of the doubt. Your default is watchful: assume motives until proven otherwise. Low scorers "tend to be cynical and skeptical and assume that others may be dishonest or dangerous." That protects you from exploitation — but at the extreme, research documents the cost: low A-Trust is the strongest single marker of paranoid personality features (r = −.45 in meta-analysis) — "perceiving malevolent intentions in benign behavior, unfounded beliefs about being used, and chronic vigilance that isolates."`,
+    teaser: (P) =>
+      `Your trust is at ${P.A1} out of 100 — about ${100 - P.A1} people default to giving others more benefit of the doubt. You run a verification-first stance: competence and motives tend to be earned, not assumed. That can protect you from naive commitments; the trade-off is slower rapport, sharper suspicion under stress, and fatigue from constant vigilance. Self-report here often diverges from observer ratings — worth checking with someone who sees you in real conflicts and collaborations.`,
   },
 
   // T1 [SOURCE: Johnson N6; NEO PI-3 Problems in Living; Jang 1996; Bleidorn 2022; Roberts 2017]
@@ -296,9 +354,9 @@ export const FLAG_TEMPLATES = {
     teaser: (P) => `Your vulnerability is at ${P.N6} out of 100 — only ${100-P.N6} people would feel more overwhelmed under pressure. When stress arrives, something shifts: thinking clouds, confidence drops, the ability to act slows. The NEO PI-3 documents the costs: "Inability to cope with stress; responding with panic, helplessness, and dismay to even minor stressors; emotional instability; interpersonal neediness or dependency." The real cost is losing access to your own competence exactly when you need it. Personality traits are approximately 40–60% heritable according to twin studies. Young adulthood (23–39) is the most critical life stage for personality change — emotional stability increases more substantially across the lifespan than any other trait, and therapy accelerates this (d = .57 across 207 studies).`,
   },
 
-  // T1 [SOURCE: Johnson C4 — near-verbatim; Piedmont/WKU C4; Samuel & Widiger OCPD; Jang 1996]
   flag_C4_high: {
-    teaser: (P) => `Your achievement-striving is at ${P.C4} out of 100 — the researcher who built this instrument specifically flags extreme scores on this facet: "may be too single-minded and obsessed with work." High scorers are "ambitious, diligent, and purposeful — they have a sense of direction in life." At the extreme, "very high scores may invest too much in their careers and become workaholics." OCPD — the only personality disorder defined primarily by elevated Conscientiousness — includes high C4 as a core feature (r = .25 in meta-analysis). Conscientiousness is 44% heritable; the remaining variance comes primarily from nonshared environmental influences — individual life experiences, not family patterns.`,
+    teaser: (P) =>
+      `Your achievement-striving is at ${P.C4} out of 100 — only ${100 - P.C4} people push harder on goals and standards. That pattern often shows up as strong delivery, visibility, and follow-through; the trade-off is crammed life space — recovery, relationships, and "good enough" outcomes can shrink when every cycle demands peak output. The IPIP-NEO author notes very high scores can become single-minded about work; context (role demands, season of life) matters as much as the number.`,
   },
 
   // T1 [SOURCE: Johnson E5; Piedmont/WKU E5; PMC6838776 Fearless Dominance; Samuel & Widiger ASPD]
@@ -309,8 +367,9 @@ export const FLAG_TEMPLATES = {
 
 /**
  * Get the domain template for a given domain and percentile
+ * @param {object | null} [interpretive] — from buildInterpretiveReport; enriches Openness channel copy
  */
-export function getDomainText(domain, percentile, P, D, S) {
+export function getDomainText(domain, percentile, P, D, S, interpretive = null) {
   let band;
   if (percentile <= 15) band = 'very_low';
   else if (percentile <= 35) band = 'low';
@@ -318,25 +377,31 @@ export function getDomainText(domain, percentile, P, D, S) {
   else if (percentile <= 65) band = 'above_mid';
   else if (percentile <= 85) band = 'high';
   else band = 'very_high';
-  
+
   const template = DOMAIN_TEMPLATES[domain]?.[band];
   if (!template) return '';
-  return template(P, D, S);
+  return template(P, D, S, interpretive);
 }
 
 /**
- * Get teaser text for a fired rule
+ * @returns {{ behavioral: string | null, research: string | null }}
+ */
+export function getTeaserParts(ruleId, P, D, S) {
+  let behavioral = null;
+  if (CROSS_TEMPLATES[ruleId]) {
+    behavioral = CROSS_TEMPLATES[ruleId].teaser(P, D, S);
+  } else if (FLAG_TEMPLATES[ruleId]) {
+    behavioral = FLAG_TEMPLATES[ruleId].teaser(P, D, S);
+  }
+  const research = formatResearchAppendix(ruleId);
+  return { behavioral, research: research || null };
+}
+
+/**
+ * Get teaser text for a fired rule (behavioral layer only; use getTeaserParts + research UI for appendix)
  */
 export function getTeaserText(ruleId, P, D, S) {
-  // Check cross-connection templates first
-  if (CROSS_TEMPLATES[ruleId]) {
-    return CROSS_TEMPLATES[ruleId].teaser(P, D, S);
-  }
-  // Then flag templates
-  if (FLAG_TEMPLATES[ruleId]) {
-    return FLAG_TEMPLATES[ruleId].teaser(P, D, S);
-  }
-  return null;
+  return getTeaserParts(ruleId, P, D, S).behavioral;
 }
 
 /**

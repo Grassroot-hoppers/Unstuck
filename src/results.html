@@ -548,6 +548,55 @@ async function loadResults() {
 }
 
 // ============================================================
+// Research mode (session; optional remember via localStorage)
+// ============================================================
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function loadResearchMode() {
+  try {
+    if (localStorage.getItem('unstuck_remember_research') === '1') {
+      return localStorage.getItem('unstuck_research_mode') === '1';
+    }
+    return sessionStorage.getItem('unstuck_research_mode') === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function loadRememberResearch() {
+  try {
+    return localStorage.getItem('unstuck_remember_research') === '1';
+  } catch (e) {
+    return false;
+  }
+}
+
+function saveResearchMode(on, remember) {
+  try {
+    sessionStorage.setItem('unstuck_research_mode', on ? '1' : '0');
+    if (remember) {
+      localStorage.setItem('unstuck_remember_research', '1');
+      localStorage.setItem('unstuck_research_mode', on ? '1' : '0');
+    } else {
+      localStorage.removeItem('unstuck_remember_research');
+      localStorage.removeItem('unstuck_research_mode');
+    }
+  } catch (e) { /* storage blocked */ }
+}
+
+function setResearchAppendixVisible(show) {
+  document.querySelectorAll('.pattern-card__research-wrap, .rule-card__research-wrap').forEach((el) => {
+    el.style.display = show ? 'block' : 'none';
+  });
+}
+
+// ============================================================
 // RENDER
 // ============================================================
 async function render() {
@@ -580,6 +629,9 @@ async function render() {
   
   const engineResult = runEngine(engineInput, age, gender);
   const { scoring, domainTexts, facetTable, teasers, firedRules, stats, interpretive } = engineResult;
+  const researchMode = loadResearchMode();
+  const rememberResearch = loadRememberResearch();
+  const researchDisplay = researchMode ? 'block' : 'none';
 
   // Build domain blocks HTML (engine-powered)
   const domainBlocksHTML = domainOrder.map(key => {
@@ -639,17 +691,43 @@ async function render() {
   }).join('');
 
   // Build patterns section (teasers + all fired rules)
-  const teaserCardsHTML = teasers.length > 0 ? teasers.map(t => `
+  const teaserCardsHTML =
+    teasers.length > 0
+      ? teasers
+          .map((t) => {
+            const patternMeta = interpretive?.patterns?.find((p) => p.ruleId === t.id);
+            const balanceHtml = patternMeta?.behavioral?.balanceHint
+              ? `<p class="pattern-card__balance">${escapeHtml(patternMeta.behavioral.balanceHint)}</p>`
+              : '';
+            const researchHtml = t.researchText
+              ? `<div class="pattern-card__research-wrap" style="display:${researchDisplay}"><p class="pattern-card__research-h">Research framing (correlational — not diagnostic)</p><p class="pattern-card__research">${escapeHtml(t.researchText)}</p></div>`
+              : '';
+            return `
     <div class="pattern-card">
       <div class="pattern-card__id">${t.id.replace(/_/g, ' ')}<span class="pattern-card__confidence pattern-card__confidence--${t.confidence}">${t.confidence}</span></div>
       <p class="pattern-card__text">${t.text}</p>
+      ${balanceHtml}
+      ${researchHtml}
     </div>
-  `).join('') : '<p style="color: var(--ink-muted); font-size: var(--text-sm);">No strong cross-facet patterns detected at current score levels.</p>';
+  `;
+          })
+          .join('')
+      : '<p style="color: var(--ink-muted); font-size: var(--text-sm);">No strong cross-facet patterns detected at current score levels.</p>';
 
   const patternsHTML = `
     <div class="patterns-section">
       <h3>Your Patterns</h3>
       <p>Cross-facet insights — where traits interact in distinctive ways</p>
+      <div class="research-mode-controls no-print" style="margin-bottom:1.25rem;padding:1rem;border:1px solid var(--border-light,#E8E2D8);background:var(--cream,#F8F4ED);font-size:var(--text-sm,0.875rem);">
+        <label style="display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:0.75rem;cursor:pointer;">
+          <input type="checkbox" id="unstuck-research-toggle" ${researchMode ? 'checked' : ''} style="margin-top:0.2rem;">
+          <span>Show research framing (extra correlational context from published work — <strong>not</strong> a clinical interpretation)</span>
+        </label>
+        <label style="display:flex;align-items:flex-start;gap:0.5rem;cursor:pointer;">
+          <input type="checkbox" id="unstuck-research-remember" ${rememberResearch ? 'checked' : ''} style="margin-top:0.2rem;">
+          <span>Remember this choice on this device</span>
+        </label>
+      </div>
       ${teaserCardsHTML}
     </div>
   `;
@@ -659,7 +737,11 @@ async function render() {
     <div class="fired-rules-section">
       <h3>All Fired Rules</h3>
       <p>${stats.totalRulesFired} rules fired (${stats.crossConnectionsFired} cross-connections, ${stats.flagsFired} flags)</p>
-      ${firedRules.map(r => `
+      ${firedRules.map((r) => {
+        const rAppend = r.researchText
+          ? `<div class="rule-card__research-wrap" style="display:${researchDisplay}"><p class="pattern-card__research-h">Research framing (correlational — not diagnostic)</p><p class="pattern-card__research">${escapeHtml(r.researchText)}</p></div>`
+          : '';
+        return `
         <div class="rule-card rule-card--${r.category}">
           <div class="rule-card__header">
             <span class="rule-card__id">${r.id.replace(/_/g, ' ')}</span>
@@ -667,9 +749,11 @@ async function render() {
             <span class="pattern-card__confidence pattern-card__confidence--${r.confidence}">${r.confidence}</span>
           </div>
           <p class="rule-card__text">${r.fullText || r.teaserText || ''}</p>
+          ${rAppend}
           <p class="rule-card__source">Source: ${r.source}</p>
         </div>
-      `).join('')}
+      `;
+      }).join('')}
     </div>
   ` : '';
 
@@ -690,6 +774,10 @@ async function render() {
         <h1 class="results-header__title">Your Vitality Profile</h1>
         <p class="results-header__sub">IPIP-NEO-120 &middot; ${age ? 'Age ' + age : ''} ${gender ? '&middot; ' + gender.charAt(0).toUpperCase() + gender.slice(1) : ''}</p>
       </div>
+
+      <aside class="interpretive-invariant-footer" aria-label="About this assessment" style="margin-bottom:1.25rem;padding:0.75rem 1rem;background:var(--cream,#F8F4ED);border-left:4px solid var(--forest,#2D6A4F);font-size:var(--text-sm,0.875rem);line-height:1.5;">
+        <strong>Important:</strong> The Big Five summarizes typical patterns in <em>self-reported</em> behavior. It does not diagnose conditions, explain motives, or replace professional assessment.
+      </aside>
 
       <!-- Radar Chart -->
       <div class="radar-section">
@@ -754,6 +842,20 @@ async function render() {
       </div>
     </div>
   `;
+
+  const researchToggle = document.getElementById('unstuck-research-toggle');
+  const researchRememberEl = document.getElementById('unstuck-research-remember');
+  if (researchToggle && researchRememberEl) {
+    researchToggle.addEventListener('change', () => {
+      const on = researchToggle.checked;
+      saveResearchMode(on, researchRememberEl.checked);
+      setResearchAppendixVisible(on);
+    });
+    researchRememberEl.addEventListener('change', () => {
+      saveResearchMode(researchToggle.checked, researchRememberEl.checked);
+    });
+    setResearchAppendixVisible(researchToggle.checked);
+  }
 
   // --- Render Radar Chart ---
   const ctx = document.getElementById("radar-chart").getContext("2d");

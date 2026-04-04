@@ -10,6 +10,7 @@ import {
   channelRhetoricalSignalClass,
 } from './signal.js';
 import { getInstrumentConfig } from '../instruments/ipip-neo-120.config.js';
+import { getPatternBalanceHint, getPatternResearchBlock } from '../research-blocks.js';
 
 const DOMAIN_CODES = ['N', 'E', 'O', 'A', 'C'];
 
@@ -80,20 +81,25 @@ export function buildInterpretiveReport({
     };
   }
 
-  const patterns = firedRules.map((rule) => ({
-    ruleId: rule.id,
-    category: rule.category,
-    confidenceTier: rule.confidence,
-    ingredientFacetCodes: [...rule.facets],
-    rhetoricalSignalClass: 'supporting',
-    proseRegister: 'hedged',
-    behavioral: {
-      helps: '',
-      backfires: '',
-      balanceHint: '',
-    },
-    researchBlock: undefined,
-  }));
+  const patterns = firedRules.map((rule) => {
+    const rb = getPatternResearchBlock(rule.id);
+    return {
+      ruleId: rule.id,
+      category: rule.category,
+      confidenceTier: rule.confidence,
+      ingredientFacetCodes: [...rule.facets],
+      rhetoricalSignalClass: 'supporting',
+      proseRegister: 'hedged',
+      behavioral: {
+        helps: '',
+        backfires: '',
+        balanceHint: getPatternBalanceHint(rule.id) || '',
+      },
+      researchBlock: rb
+        ? { correlations: rb.correlations, citations: rb.citations ?? [] }
+        : undefined,
+    };
+  });
 
   return {
     instrumentId: instrumentConfig.id,
