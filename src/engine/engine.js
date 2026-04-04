@@ -13,6 +13,8 @@ import { scoreProfile } from './scoring.js';
 import { evaluateRules, selectTeasers } from './rules.js';
 import { getDomainText, getTeaserText, getFullText } from './templates.js';
 import { NORMS, REJECTED_FACETS, DOMAIN_FACETS, getConfidenceTier } from './normative-data.js';
+import { buildInterpretiveReport } from './interpretive/build-report.js';
+import { getInstrumentConfig } from './instruments/ipip-neo-120.config.js';
 
 /**
  * Run the full interpretation engine
@@ -138,5 +140,12 @@ export function runEngine(rawScores, ageGroup, gender) {
       maxScatter: Math.max(...Object.values(S)),
       maxScatterDomain: Object.entries(S).sort((a,b) => b[1]-a[1])[0][0],
     },
+
+    interpretive: buildInterpretiveReport({
+      profile,
+      rawScores,
+      instrumentConfig: getInstrumentConfig(),
+      firedRules,
+    }),
   };
 }

@@ -4,7 +4,9 @@
 
 **Goal:** Add an instrument-scoped interpretive layer that emits a typed `InterpretiveReport` (nested `domains[*].facets`, confidence-aware `proseRegister`, v1 `ContextTag` enum, Openness channel model per spec), migrate Agreeableness + Openness template copy first, extract pattern-level `researchBlock` from default narrative, and ship results UI (invariant footer + session/research toggle).
 
-**Architecture:** New modules under `src/engine/interpretive/` and `src/engine/instruments/` sit **between** existing `scoreProfile` / `evaluateRules` and template renderers. `runEngine` (and the duplicate inline engine in `results.html`) gains an **`interpretive`** (or top-level) field on the return object without breaking existing `domainTexts` / `teasers` until templates consume slots. `templates.js` gradually reads from the report + `researchMode` flag instead of baking PD language into default strings. **`results.html` duplicates engine code today** — any change to `engine.js` must be **ported** to the inline block (or the plan’s final tasks should extract a single `<script type="module">` source) so production results stay consistent.
+**Architecture:** New modules under `src/engine/interpretive/` and `src/engine/instruments/` sit **between** existing `scoreProfile` / `evaluateRules` and template renderers. `runEngine` gains an **`interpretive`** field on the return object without breaking existing `domainTexts` / `teasers` until templates consume slots. `templates.js` gradually reads from the report + `researchMode` flag instead of baking PD language into default strings. **`results.html` loads the engine via a single ES module** (`<script type="module">` + `import { runEngine } from './engine/engine.js'`). Tasks 4–6 **must not** reintroduce an inline engine bundle — one source of truth only.
+
+**Execution mode:** Inline Tasks **1–3** in this session; **checkpoint** after Task 3 tests pass and spot-check `interpretive` on a fixture (e.g. Jobs) **before** Tasks 4–6. Tasks **4–5** need human read of copy; **Task 6** UI can follow independently.
 
 **Tech stack:** Static HTML/CSS/JS; ES modules in `src/engine/`. Tests: **Node.js** built-in `node:test` + `node:assert/strict` (no `package.json` required). Spec: `docs/superpowers/specs/2026-04-04-calibrated-interpretive-engine-design.md`.
 
@@ -23,7 +25,7 @@
 | `src/engine/engine.js` | Call builder; attach report to return value |
 | `src/engine/templates.js` | Migrate A + O domains; pattern `researchBlock` keys; default non-clinical copy |
 | `src/engine/research-blocks.js` *(new)* | Optional: keyed strings for `researchBlock.correlations` / citations refs |
-| `src/results.html` | Footer chrome; research toggle + `sessionStorage`/`localStorage` remember; pass `researchMode` into render path; **sync engine changes** |
+| `src/results.html` | ES module import of `./engine/engine.js`; footer + research toggle (Task 6); pass `researchMode` into render path |
 | `docs/scoring.md` or `ARCHITECTURE.md` | Short subsection: interpretive layer + how to run `node --test` |
 
 ---
@@ -216,19 +218,32 @@ test('O4 is not grouped into opennessChannels aggregates', async (t) => {
 
 Adjust property names (`facetCodes` vs spec’s internal naming) to match implementation but keep assertion intent.
 
-- [ ] **Step 3: Test determinism**
+- [ ] **Step 3: Test high-O scatter regression**
+
+Assert that for a deliberately **lumpy** Openness profile (e.g. low O1/O2/O4 raw, very high O5), `report.opennessChannels.cognitive.signalClass === 'core'` **while** `report.domains.O.proseRegister === 'hedged'`, and `profile.scatter.O >= 45`. This locks **“domain register does not inherit from the strongest facet”** — hedging comes from **domain scatter**, not from channel signal.
+
+- [ ] **Step 4: Test determinism**
 
 Same inputs → `JSON.stringify(report)` stable (sort keys if needed before compare, or compare selected fields).
 
-- [ ] **Step 4: Wire `engine.js`**
+- [ ] **Step 5: Wire `engine.js`**
 
-After existing pipeline steps, set `interpretive: buildInterpretiveReport({ profile, rawScores, instrumentConfig: getInstrumentConfig(), firedRules: firedRules })` (use the same `firedRules` array variable names as in file).
+After existing pipeline steps, set `interpretive: buildInterpretiveReport({ profile, rawScores, instrumentConfig: getInstrumentConfig(), firedRules })`.
 
-- [ ] **Step 5: Copy changes into `results.html` inline engine**
+- [ ] **Step 6: Remove duplicated engine from `results.html`; load module**
 
-Search for `function runEngine` in `results.html` and merge the same `interpretive` attachment so hash-driven results match module tests.
+Delete the inlined normative-data / scoring / rules / templates / engine bundle. Replace with **one** script block:
 
-- [ ] **Step 6: Run tests**
+```html
+<script type="module">
+import { runEngine } from './engine/engine.js';
+// … existing results-page code (DOMAIN_META, render, etc.)
+</script>
+```
+
+**Note:** `file://` URLs may block module resolution in some browsers; use a static server (e.g. `npx serve src`) for local checks. Deployed HTTPS is fine.
+
+- [ ] **Step 7: Run tests**
 
 ```text
 node --test src/engine/interpretive/build-report.test.js src/engine/interpretive/tiers.test.js
@@ -236,11 +251,11 @@ node --test src/engine/interpretive/build-report.test.js src/engine/interpretive
 
 Expected: PASS.
 
-- [ ] **Step 7: Commit**
+- [ ] **Step 8: Commit**
 
 ```bash
-git add src/engine/interpretive/build-report.js src/engine/interpretive/build-report.test.js src/engine/engine.js src/results.html
-git commit -m "feat(engine): build InterpretiveReport with nested domain facets and O channels"
+git add src/engine/interpretive/ src/engine/instruments/ src/engine/engine.js src/results.html
+git commit -m "feat(engine): InterpretiveReport builder + results page ES module engine"
 ```
 
 ---
@@ -256,6 +271,7 @@ git commit -m "feat(engine): build InterpretiveReport with nested domain facets 
 - [ ] **Step 2: Rewrite `A` and `O` domain copy** to:
   - use `report.domains.A.proseRegister` / `report.domains.O.proseRegister` to pick hedge strength,
   - remove PD-first sentences from default `very_low` / `very_high` **A** blocks (move strings to Task 5 `researchBlock` registry keyed by domain-level is **out of scope** — only pattern-level v1; for **domain** migration, **delete or neutralize** PD sentences entirely from default layer rather than moving to domain researchBlock),
+  - **Copy audit must include teasers**, not only full domain text: in particular **`very_low` Agreeableness teasers** (`getTeaserText` / flag paths) tend to be the punchiest PD-adjacent lines users actually read.
   - for **O**, describe aesthetic vs cognitive vs values channels when `opennessChannels` shows divergence; never claim O3 = “Openness” same as O5.
 
 - [ ] **Step 3: Manually open `results.html`** with a fixture hash or `debug.html` persona that stresses low A and high O scatter; verify default text contains no personality-disorder-forward phrasing in opening sentences.
@@ -280,7 +296,12 @@ git commit -m "fix(copy): narratives for Agreeableness and Openness use interpre
 
 - [ ] **Step 2: Default teaser/full** renders **without** those paragraphs; when `researchMode === true`, renderer appends research block below fold.
 
-- [ ] **Step 3: Implement balance line** for selected cross-rules: curated `balanceHint` in registry; `balanceFacetRefs` filled in builder only when `isEligibleBalanceFacet` holds for candidates **and** ingredient tiers meet spec (silver+ for augment).
+- [ ] **Step 3: Implement balance line** — **v1 authored `balanceHint` (and optional derived `balanceFacetRefs`) for exactly these rules** so the registry is never empty:
+
+  - `disagreeable_leader`
+  - `flag_A1_low`
+  - `flag_A2_low`
+  - `flag_C4_high`
 
 - [ ] **Step 4: Commit**
 
@@ -347,11 +368,6 @@ git commit -m "docs: document interpretive engine modules and node tests"
 
 ---
 
-**Plan complete and saved to** `docs/superpowers/plans/2026-04-04-calibrated-interpretive-engine-plan.md`.
+**Plan saved to** `docs/superpowers/plans/2026-04-04-calibrated-interpretive-engine-plan.md`.
 
-**Execution options:**
-
-1. **Subagent-driven (recommended)** — Fresh subagent per task, review between tasks.
-2. **Inline execution** — Run tasks in this session with checkpoints between tasks.
-
-Which approach do you want?
+**Execution:** Inline Tasks **1–3** first → **checkpoint** (tests green + optional Jobs fixture inspect of `engineResult.interpretive`) → then **4–6** with copy/UI review.
