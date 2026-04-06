@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
-<!-- UNSTUCK v0.5 — Personality interpretation engine
+<!-- UNSTUCK v0.52 — Personality interpretation engine (Perplexity fact-check)
      Copyright (C) 2025 Unstuck Contributors
      This program is free software: you can redistribute it and/or modify
      it under the terms of the GNU Affero General Public License as published
@@ -36,7 +36,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="supabase-results.js"></script>
 <style>
-/* === v0.5 Engine Integration Styles === */
+/* === v0.52 Engine integration styles (Perplexity fact-check) === */
 
 .version-banner {
   background: var(--forest-dark, #1B4332);
@@ -295,8 +295,9 @@
 <body>
 
 <!-- Version Banner -->
-<div class="version-banner no-print">
-  UNSTUCK v0.5 — 100% template-generated, zero AI — <a href="view-source:" style="color: rgba(255,255,255,0.7); text-decoration: underline;" onclick="event.preventDefault(); window.open('view-source:' + window.location.href);">view source to verify</a>
+<div class="version-banner no-print" title="Live site = latest commit on GitHub main (Pages deploy ~1–2 min after push)">
+  <strong>UNSTUCK v0.52</strong> — Perplexity fact-check · Table A1 norms · 100% templates, zero AI —
+  <a href="view-source:" style="color: rgba(255,255,255,0.7); text-decoration: underline;" onclick="event.preventDefault(); window.open('view-source:' + window.location.href);">view source to verify</a>
 </div>
 
 <!-- Nav -->
@@ -338,7 +339,8 @@
   <div class="container">
     <p class="footer__text">
       Based on IPIP-NEO-120 (Johnson, 2014). Items from <a href="https://ipip.ori.org/" target="_blank" rel="noopener">ipip.ori.org</a> (public domain).
-      <br>Norms: Kajonius &amp; Johnson (2019), N=320,128.
+      <br>Norms: Kajonius &amp; Johnson (2019), N=320,128 (Appendix Table A1).
+      <br><strong>v0.52</strong> — Perplexity fact-check pass (norms, reliabilities, engine integrity). Live deploy: push to <a href="https://github.com/Grassroot-hoppers/Unstuck/tree/main" target="_blank" rel="noopener">main</a> → GitHub Pages.
       <br>This is a self-discovery tool, not a clinical diagnostic instrument.
       <br>
       <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
@@ -350,7 +352,7 @@
 import { runEngine } from './engine/engine.js';
 // SPDX-License-Identifier: AGPL-3.0-or-later
 // ============================================================
-// RESULTS PAGE — v0.5 (Engine-powered, no paywall)
+// RESULTS PAGE — v0.52 (Engine-powered; Perplexity fact-check)
 // ============================================================
 
 // ============================================================
@@ -842,7 +844,8 @@ async function render() {
       <!-- Citations -->
       <div class="citations">
         <p>Based on IPIP-NEO-120 (Johnson, 2014). Items from <a href="https://ipip.ori.org/" target="_blank" rel="noopener">ipip.ori.org</a> (public domain).</p>
-        <p>Norms: Kajonius &amp; Johnson (2019), N=320,128.</p>
+        <p>Norms: Kajonius &amp; Johnson (2019), N=320,128 (Appendix Table A1).</p>
+        <p><strong>v0.52</strong> — Perplexity fact-check. Deploy = latest <a href="https://github.com/Grassroot-hoppers/Unstuck/commits/main" target="_blank" rel="noopener">main</a> on GitHub Pages.</p>
         <p>This is a self-discovery tool, not a clinical diagnostic instrument.</p>
       </div>
     </div>
