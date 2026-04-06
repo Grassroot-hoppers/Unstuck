@@ -12,7 +12,7 @@
 import { scoreProfile } from './scoring.js';
 import { evaluateRules, selectTeasers } from './rules.js';
 import { getDomainText, getTeaserParts, getFullText } from './templates.js';
-import { NORMS, REJECTED_FACETS, getConfidenceTier } from './normative-data.js';
+import { NORMS, getConfidenceTier } from './normative-data.js';
 import { buildInterpretiveReport } from './interpretive/build-report.js';
 import { getInstrumentConfig } from './instruments/ipip-neo-120.config.js';
 
@@ -81,15 +81,15 @@ export function runEngine(rawScores, ageGroup, gender) {
   ];
 
   for (const f of allFacetCodes) {
-    const isRejected = REJECTED_FACETS.has(f);
     const pct = P[f];
     const raw = rawScores[f];
     const norm = NORMS[f];
-    const tier = isRejected ? 'rejected' : getConfidenceTier(f);
+    const tier = getConfidenceTier(f);
+    const isLowReliability = tier === 'caution';
 
     let roomOf100 = '';
-    if (isRejected) {
-      roomOf100 = 'below confidence threshold';
+    if (pct == null) {
+      roomOf100 = '';
     } else if (pct >= 85) {
       roomOf100 = `only ${100 - pct} in 100 score higher`;
     } else if (pct <= 15) {
@@ -110,9 +110,9 @@ export function runEngine(rawScores, ageGroup, gender) {
       percentile: pct,
       roomOf100,
       tier,
-      isRejected,
-      isHigh: !isRejected && pct >= 85,
-      isLow: !isRejected && pct <= 15,
+      isLowReliability,
+      isHigh: pct != null && pct >= 85,
+      isLow: pct != null && pct <= 15,
     });
   }
 
@@ -122,7 +122,7 @@ export function runEngine(rawScores, ageGroup, gender) {
       percentiles: P,
       domains: D,
       scatter: S,
-      rejected: profile.rejected,
+      lowReliabilityFacets: profile.lowReliabilityFacets,
     },
     domainTexts,
     facetTable,
@@ -134,7 +134,7 @@ export function runEngine(rawScores, ageGroup, gender) {
       flagsFired: firedRules.filter((r) => r.category === 'flag').length,
       highFacets: facetTable.filter((f) => f.isHigh).length,
       lowFacets: facetTable.filter((f) => f.isLow).length,
-      rejectedFacets: facetTable.filter((f) => f.isRejected).length,
+      lowReliabilityFacets: facetTable.filter((f) => f.isLowReliability).length,
       maxScatter: Math.max(...Object.values(S)),
       maxScatterDomain: Object.entries(S).sort((a, b) => b[1] - a[1])[0][0],
     },

@@ -38,7 +38,7 @@ test('O4 is not placed inside any opennessChannels bucket', () => {
   assert.ok(oFacets.includes('O4'));
 });
 
-test('high Openness scatter: cognitive channel stays core, domain prose is hedged', () => {
+test('high Openness scatter: cognitive channel signal + hedged domain prose', () => {
   const raw = uniformRaw(14);
   raw.O1 = 4;
   raw.O2 = 4;
@@ -59,7 +59,8 @@ test('high Openness scatter: cognitive channel stays core, domain prose is hedge
     instrumentConfig: getInstrumentConfig(),
     firedRules: fired,
   });
-  assert.equal(report.opennessChannels.cognitive.signalClass, 'core');
+  // O5 α = .74 (Table A1) → bronze tier; channel class is supporting unless minRank ≥ silver
+  assert.equal(report.opennessChannels.cognitive.signalClass, 'supporting');
   assert.equal(report.domains.O.proseRegister, 'hedged');
 });
 

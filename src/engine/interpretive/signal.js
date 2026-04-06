@@ -35,13 +35,13 @@ export function domainProseRegisterFromScatter(scatter) {
  * Facet row register — independent from domain (no inheritance).
  */
 export function facetProseRegister(facetCode, confidenceTier, instrumentConfig) {
-  if (confidenceTier === 'rejected') return 'exploratory';
+  if (confidenceTier === 'caution') return 'exploratory';
   if (instrumentConfig.opennessAmbiguousFacets?.has(facetCode)) return 'exploratory';
   if (confidenceTier === 'bronze') return 'hedged';
   return 'direct';
 }
 
-const TIER_RANK = { gold: 3, silver: 2, bronze: 1, rejected: 0 };
+const TIER_RANK = { gold: 3, silver: 2, bronze: 1, caution: 0 };
 
 /**
  * Channel-specific rhetorical class: e.g. cognitive (O5) can stay `core` while
@@ -52,7 +52,7 @@ export function channelRhetoricalSignalClass(facetCodes, percentiles) {
   for (const f of facetCodes) {
     const t = getConfidenceTier(f);
     minRank = Math.min(minRank, TIER_RANK[t] ?? 0);
-    if (t === 'rejected') return 'tentative';
+    if (t === 'caution') return 'tentative';
     const p = percentiles[f];
     if (p === null || p === undefined) return 'tentative';
   }

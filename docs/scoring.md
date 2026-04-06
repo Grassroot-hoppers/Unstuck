@@ -40,11 +40,15 @@ Based on the average score per domain or facet:
 - **Average:** average 2.5 – 3.5
 - **Low:** average < 2.5
 
-## Future: Percentile Norms
+## Percentile norms (engine / results UI)
 
-A future version will add percentile rankings based on the Johnson (2020) IPIP-NEO data repository (n = 619,150+), stratified by age and gender using regression-based continuous norming.
+Facet and domain percentiles use **z-scores** against **Kajonius & Johnson (2019), N = 320,128**, Appendix Table A1 (PMC7871748). Domain percentiles use the **mean of the six facet raw scores** in that domain, compared to the domain **M** and **SD** in the same table.
 
-The current version uses simple high/average/low descriptors to ensure accuracy without making claims the norming doesn't yet support.
+**Reliability tiers** (from facet Cronbach’s **α** in Table A1): gold / silver / bronze / **caution** (α &lt; .70). Facets in the **caution** tier are **still scored and included** in domain means, rules, and scatter; the UI flags them for **cautious interpretation**, not exclusion.
+
+## Future: stratified norms
+
+A later version may add stratified norms (e.g. Johnson IPIP repository, age × gender). Until then, the overall Table A1 norms apply to all respondents.
 
 ## Domain Structure
 

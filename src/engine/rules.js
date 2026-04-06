@@ -6,23 +6,22 @@
  * - 10 single-facet flag rules (extreme individual scores)
  * 
  * Each rule: id, facets used, condition, priority, category, source
- * Rules ONLY reference valid (non-rejected) facets.
- * 
+ *
  * All sources documented. No extrapolation.
  */
 
-import { REJECTED_FACETS, getConfidenceTier } from './normative-data.js';
+import { getConfidenceTier } from './normative-data.js';
+
+const TIER_RANK = { gold: 3, silver: 2, bronze: 1, caution: 0 };
 
 /**
  * Compute the confidence tier for a rule (= weakest facet tier)
  */
 function ruleTier(facets) {
-  const order = ['bronze', 'silver', 'gold'];
   let worst = 'gold';
   for (const f of facets) {
     const t = getConfidenceTier(f);
-    if (t === 'rejected') return 'rejected';
-    if (order.indexOf(t) < order.indexOf(worst)) worst = t;
+    if ((TIER_RANK[t] ?? -1) < TIER_RANK[worst]) worst = t;
   }
   return worst;
 }
@@ -34,7 +33,7 @@ function ruleTier(facets) {
 function computeScore(rule, percentiles) {
   const priority = rule.priority || 5;
   const conf = ruleTier(rule.facets);
-  const confBonus = { gold: 20, silver: 10, bronze: 0 }[conf] || 0;
+  const confBonus = { gold: 20, silver: 10, bronze: 0, caution: 0 }[conf] ?? 0;
   
   // Max deviation from 50 across the rule's facets
   const deviations = rule.facets
@@ -280,9 +279,6 @@ export function evaluateRules(profile) {
   const fired = [];
   
   for (const rule of RULES) {
-    // Skip if any facet is rejected
-    if (rule.facets.some(f => REJECTED_FACETS.has(f))) continue;
-    
     // Skip if any required facet has null percentile
     if (rule.facets.some(f => P[f] === null || P[f] === undefined)) continue;
     

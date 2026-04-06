@@ -1,14 +1,14 @@
-import { test } from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isEligibleBalanceFacet, ruleWeakestTier } from './tiers.js';
+import { ruleWeakestTier, isEligibleBalanceFacet } from './tiers.js';
 
-test('balance facet eligibility requires silver or gold', () => {
+test('isEligibleBalanceFacet excludes bronze and caution', () => {
   assert.equal(isEligibleBalanceFacet('gold'), true);
   assert.equal(isEligibleBalanceFacet('silver'), true);
   assert.equal(isEligibleBalanceFacet('bronze'), false);
-  assert.equal(isEligibleBalanceFacet('rejected'), false);
+  assert.equal(isEligibleBalanceFacet('caution'), false);
 });
 
-test('ruleWeakestTier returns rejected if any ingredient is rejected-tier', () => {
-  assert.equal(ruleWeakestTier(['N2', 'C3']), 'rejected');
+test('ruleWeakestTier returns caution if any ingredient is caution-tier', () => {
+  assert.equal(ruleWeakestTier(['N2', 'C3']), 'caution');
 });

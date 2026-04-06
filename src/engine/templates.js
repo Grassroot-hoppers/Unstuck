@@ -35,7 +35,7 @@
  *   PMC6838776 — Fearless Dominance / Impulsive Antisociality
  */
 
-import { NORMS } from './normative-data.js';
+import { NORMS, DOMAIN_FACETS } from './normative-data.js';
 import { formatResearchAppendix } from './research-blocks.js';
 
 // Helper: describe position relative to 50
@@ -58,13 +58,19 @@ function pos(p) {
 function opennessChannelNote(P, S, interpretive) {
   if (!interpretive?.opennessChannels) return '';
   const { aesthetic, cognitive, values } = interpretive.opennessChannels;
+  const strengthTail = (signalClass) => {
+    if (signalClass === 'core') return 'Strong match for you in this part of Openness.';
+    if (signalClass === 'supporting')
+      return 'Shows up meaningfully here, but it is not the whole story.';
+    return 'Use this channel as exploratory — bands are wide or measurement is weaker.';
+  };
   const line = (label, ch) => {
     const bits = ch.facetCodes.map((code) => {
       const lab = NORMS[code]?.label || code;
       const pct = P[code];
       return pct == null ? `${lab} (no percentile)` : `${lab} ${pct}pct`;
     });
-    return `${label} — ${bits.join(', ')} (${ch.signalClass} signal).`;
+    return `${label} — ${bits.join(', ')} ${strengthTail(ch.signalClass)}`;
   };
   const o4 = P.O4 != null ? `Adventurousness (O4) at ${P.O4}pct sits outside those channels and is worth reading on its own.` : '';
   const o3 =
@@ -299,13 +305,23 @@ export const CROSS_TEMPLATES = {
 
   // T1 [SOURCE: Costa & McCrae 1995 scatter — Case A example, verbatim] — was already 0% T3
   domain_scatter_N: {
-    teaser: (P) => `Your Neuroticism domain score suggests you're roughly in the middle — but that average is hiding real extremes. Your individual facets range from ${Math.min(...['N1','N2','N3','N4','N6'].filter(f=>P[f]).map(f=>P[f]))} to ${Math.max(...['N1','N2','N3','N4','N6'].filter(f=>P[f]).map(f=>P[f]))} out of 100. Research says this scatter isn't measurement error — it reflects genuinely different emotional systems operating at different intensities in you. The domain label doesn't describe you accurately. The facets do.`,
+    teaser: (P) => {
+      const vals = DOMAIN_FACETS.N.map((f) => P[f]).filter((x) => x != null);
+      const lo = Math.min(...vals);
+      const hi = Math.max(...vals);
+      return `Your Neuroticism domain score suggests you're roughly in the middle — but that average is hiding real extremes. Your individual facets range from ${lo} to ${hi} out of 100. Research says this scatter isn't measurement error — it reflects genuinely different emotional systems operating at different intensities in you. The domain label doesn't describe you accurately. The facets do.`;
+    },
     full: (P) => `[Full version: Costa & McCrae Case A example, secondary loadings on A and C, facet-specific interpretation]`,
   },
 
   // T1 [SOURCE: Costa & McCrae 1995 scatter principle — verbatim]
   domain_scatter_A: {
-    teaser: (P) => `Your Agreeableness domain score looks moderate — but the facets are in conflict. They range from ${Math.min(...['A1','A2','A3','A4','A5','A6'].filter(f=>P[f]).map(f=>P[f]))} to ${Math.max(...['A1','A2','A3','A4','A5','A6'].filter(f=>P[f]).map(f=>P[f]))} out of 100. Costa & McCrae are specific: "To the extent that there is wide scatter among facet scores within a domain, interpretation of that domain becomes more complex. Particular attention should be focused on the facet scales." Understanding which facets are high and which are low tells you something no domain score ever could.`,
+    teaser: (P) => {
+      const vals = DOMAIN_FACETS.A.map((f) => P[f]).filter((x) => x != null);
+      const lo = Math.min(...vals);
+      const hi = Math.max(...vals);
+      return `Your Agreeableness domain score looks moderate — but the facets are in conflict. They range from ${lo} to ${hi} out of 100. Costa & McCrae are specific: "To the extent that there is wide scatter among facet scores within a domain, interpretation of that domain becomes more complex. Particular attention should be focused on the facet scales." Understanding which facets are high and which are low tells you something no domain score ever could.`;
+    },
     full: (P) => `[Full version: Agreeableness internal structure, compassion vs politeness distinction, secondary loadings analysis]`,
   },
 
@@ -346,7 +362,7 @@ export const FLAG_TEMPLATES = {
 
   // T1 [SOURCE: Johnson N3; Jang 1996 heritability; Roberts 2017 intervention persistence]
   flag_N3_high: {
-    teaser: (P) => `Your tendency toward depressive feelings is at ${P.N3} out of 100 — most people carry less persistent sadness and discouragement. Low moods aren't just bad days for you — they're a recurring pattern that shapes your energy and initiative. People scoring high are "prone to feelings of guilt, sadness, hopelessness, and loneliness — easily discouraged and often dejected." Starting things feels harder, motivation comes and goes — people low in this facet "lack energy and have difficulty initiating activities." Twin studies estimate Neuroticism is 41% heritable. Research across 207 intervention studies found emotional stability (including depression-proneness) was the trait most responsive to therapy, with changes persisting beyond 12 months (d = .76).`,
+    teaser: (P) => `Your tendency toward depressive feelings is at ${P.N3} out of 100 — most people carry less persistent sadness and discouragement. Low moods aren't just bad days for you — they're a recurring pattern that shapes your energy and initiative. People scoring high are "prone to feelings of guilt, sadness, hopelessness, and loneliness — easily discouraged and often dejected" — and often describe starting tasks or sustaining motivation as disproportionately hard when the low mood is active. Twin studies estimate Neuroticism is 41% heritable. Research across 207 intervention studies found emotional stability (including depression-proneness) was the trait most responsive to therapy, with changes persisting beyond 12 months (d = .76).`,
   },
 
   // T1 [SOURCE: Johnson E3; NEO PI-3 Problems in Living; Speed 2017 assertiveness training]
@@ -376,7 +392,11 @@ export const FLAG_TEMPLATES = {
 
   // T1 [SOURCE: Johnson N6; NEO PI-3 Problems in Living; Jang 1996; Bleidorn 2022; Roberts 2017]
   flag_N6_high: {
-    teaser: (P) => `Your vulnerability is at ${P.N6} out of 100 — only ${100-P.N6} people would feel more overwhelmed under pressure. When stress arrives, something shifts: thinking clouds, confidence drops, the ability to act slows. The NEO PI-3 documents the costs: "Inability to cope with stress; responding with panic, helplessness, and dismay to even minor stressors; emotional instability; interpersonal neediness or dependency." The real cost is losing access to your own competence exactly when you need it. Personality traits are approximately 40–60% heritable according to twin studies. Young adulthood (23–39) is the most critical life stage for personality change — emotional stability increases more substantially across the lifespan than any other trait, and therapy accelerates this (d = .57 across 207 studies).`,
+    teaser: (P) => {
+      const n = 100 - P.N6;
+      const people = n === 1 ? 'person' : 'people';
+      return `Your vulnerability is at ${P.N6} out of 100 — only ${n} ${people} would feel more overwhelmed under pressure. When stress arrives, something shifts: thinking clouds, confidence drops, the ability to act slows. The NEO PI-3 documents the costs: "Inability to cope with stress; responding with panic, helplessness, and dismay to even minor stressors; emotional instability; interpersonal neediness or dependency." The real cost is losing access to your own competence exactly when you need it. Personality traits are approximately 40–60% heritable according to twin studies. Young adulthood (23–39) is the most critical life stage for personality change — emotional stability increases more substantially across the lifespan than any other trait, and therapy accelerates this (d = .57 across 207 studies).`;
+    },
   },
 
   flag_C4_high: {

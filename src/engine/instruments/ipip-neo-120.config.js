@@ -2,7 +2,11 @@
  * IPIP-NEO-120 interpretive metadata (instrument-scoped).
  */
 
-import { NORMS, REJECTED_FACETS, DOMAIN_FACETS } from '../normative-data.js';
+import {
+  NORMS,
+  DOMAIN_FACETS,
+  getLowReliabilityFacetCodes,
+} from '../normative-data.js';
 
 export const INSTRUMENT_ID = 'ipip-neo-120';
 
@@ -31,7 +35,7 @@ export function getInstrumentConfig() {
   return {
     id: INSTRUMENT_ID,
     norms: NORMS,
-    rejectedFacets: REJECTED_FACETS,
+    lowReliabilityFacets: new Set(getLowReliabilityFacetCodes()),
     domainFacets: DOMAIN_FACETS,
     opennessChannels: OPENNESS_CHANNELS,
     opennessAmbiguousFacets: OPENNESS_AMBIGUOUS_FACETS,

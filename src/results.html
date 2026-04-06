@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 <!-- UNSTUCK v0.5 — Personality interpretation engine
      Copyright (C) 2025 Unstuck Contributors
@@ -140,6 +140,11 @@
   background: rgba(184, 92, 56, 0.1);
 }
 
+.pattern-card__confidence--caution {
+  color: #6b482f;
+  background: rgba(139, 90, 60, 0.12);
+}
+
 .pattern-card__text {
   font-size: var(--text-base, 1rem);
   color: var(--ink-light, #4A4A4A);
@@ -154,7 +159,7 @@
   font-weight: 600;
 }
 
-.facet-card__rejected {
+.facet-card__low-reliability {
   display: block;
   font-family: var(--font-mono, monospace);
   font-size: 0.7rem;
@@ -165,12 +170,12 @@
   line-height: 1.4;
 }
 
-.facet-card--rejected {
-  opacity: 0.7;
+.facet-card--low-reliability {
+  opacity: 0.85;
 }
 
-.facet-card--rejected .facet-card__bar-fill {
-  background: var(--border, #D6D0C6);
+.facet-card--low-reliability .facet-card__bar-fill {
+  background: linear-gradient(90deg, var(--forest-light, #40916C) 0%, var(--border, #D6D0C6) 100%);
 }
 
 /* Fired rules section */
@@ -647,25 +652,25 @@ async function render() {
       const facetCode = key + fn;
       const facetData = facetTable.find(f => f.code === facetCode);
       const fPct = facetData ? facetData.percentile : null;
-      const isRejected = facetData ? facetData.isRejected : false;
+      const isLowReliability = facetData ? facetData.isLowReliability : false;
       const fPercent = Math.round(((fScore - 4) / 16) * 100);
       
-      const rejectedBadge = isRejected 
-        ? `<span class="facet-card__rejected">&#x26A0;&#xFE0F; Below 70% reliability — safer to disregard</span>`
+      const lowReliabilityBadge = isLowReliability 
+        ? `<span class="facet-card__low-reliability">&#x26A0;&#xFE0F; Internal consistency below .70 (&alpha;) &mdash; interpret this facet cautiously</span>`
         : '';
       
       const pctDisplay = fPct !== null 
         ? `<span class="facet-card__percentile">${ordinalSuffix(fPct)} percentile</span>`
         : '';
       
-      const cardClass = isRejected ? 'facet-card facet-card--rejected' : 'facet-card';
+      const cardClass = isLowReliability ? 'facet-card facet-card--low-reliability' : 'facet-card';
       
       return `
         <div class="${cardClass}">
           <div class="facet-card__name">${meta.facets[fn]}</div>
           <div class="facet-card__score">${fScore}/20 &middot; ${pctDisplay}</div>
           <div class="facet-card__bar"><div class="facet-card__bar-fill" style="width: ${fPercent}%"></div></div>
-          ${rejectedBadge}
+          ${lowReliabilityBadge}
         </div>
       `;
     }).join('');
@@ -762,7 +767,7 @@ async function render() {
     <div class="engine-stats">
       <p class="engine-stats__text">
         Engine: ${stats.totalRulesFired} rules fired (${stats.crossConnectionsFired} cross-connections, ${stats.flagsFired} flags)
-        &middot; ${stats.highFacets} high &middot; ${stats.lowFacets} low &middot; ${stats.rejectedFacets} rejected
+        &middot; ${stats.highFacets} high &middot; ${stats.lowFacets} low &middot; ${stats.lowReliabilityFacets} low-reliability facets
       </p>
     </div>
   `;
