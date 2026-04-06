@@ -9,7 +9,7 @@
       defaultAge: DEFAULT_AGE,
       defaultGender: DEFAULT_GENDER,
       expectedBlurb:
-        'Very high Extraversion (assertiveness, gregariousness) but low warmth; very low Agreeableness across all facets; explosive Anger; near-zero Self-Consciousness and Vulnerability; high Achievement-Striving but very low Deliberation/Dutifulness.',
+        'Very high Extraversion (assertiveness, gregariousness, immediate social engagement); very low Agreeableness; explosive Anger/Volatility; low Withdrawal (anxiety channel) relative to anger; near-zero Self-Consciousness and Vulnerability; high Achievement-Striving but weak impulse control and very low Deliberation/Dutifulness.',
       answers: [
 
         // ================================================================
@@ -17,10 +17,10 @@
         // ================================================================
 
         // N1 — Anxiety
-        { num: 1,   text: "Worry about things",                    answer: 4, justification: "Documented worry about loyalty, ratings, media coverage" },
-        { num: 31,  text: "Fear for the worst",                    answer: 4, justification: "Catastrophizing about threats — political, legal, reputational" },
-        { num: 61,  text: "Am afraid of many things",              answer: 3, justification: "Projects fearlessness publicly; anxiety exists but is masked by narcissistic bravado" },
-        { num: 91,  text: "Get stressed out easily",               answer: 3, justification: "Performs stress-resistance; the 'easily' qualifier doesn't fit the public persona" },
+        { num: 1,   text: "Worry about things",                    answer: 3, justification: "Low Anxiety/Withdrawal facet; reactive channel is anger and dominance, not anxious rumination" },
+        { num: 31,  text: "Fear for the worst",                    answer: 2, justification: "Public catastrophizing is largely rhetorical; internally dauntless/fearless pattern in expert ratings" },
+        { num: 61,  text: "Am afraid of many things",              answer: 2, justification: "Very low Vulnerability; behavioral dominance — not a high-fear Withdrawal profile" },
+        { num: 91,  text: "Get stressed out easily",               answer: 2, justification: "Stress shows as aggression and combativeness more than feeling overwhelmed or helpless" },
 
         // N2 — Anger
         { num: 6,   text: "Get angry easily",                      answer: 5, justification: "Explosive temper documented by biographers, aides (Barbara Res, Tony Schwartz); hair-trigger" },
@@ -29,10 +29,10 @@
         { num: 96,  text: "Am not easily annoyed",                 answer: 1, justification: "Reversed — maximally annoyed; extremely thin-skinned" },
 
         // N3 — Depression
-        { num: 11,  text: "Often feel blue",                       answer: 3, justification: "No strong evidence either way" },
-        { num: 41,  text: "Dislike myself",                        answer: 2, justification: "Narcissistic self-image — does not dislike himself" },
+        { num: 11,  text: "Often feel blue",                       answer: 2, justification: "Depressiveness low in ratings; hypomanic grievance energy — not a melancholic core" },
+        { num: 41,  text: "Dislike myself",                        answer: 1, justification: "Extreme narcissism; lowest Modesty facet — 'stable genius' self-regard, not self-dislike" },
         { num: 71,  text: "Am often down in the dumps",            answer: 2, justification: "No evidence of depression; grandiosity counteracts this" },
-        { num: 101, text: "Feel comfortable with myself",          answer: 5, justification: "Reversed — extreme self-comfort; definitional narcissistic grandiosity" },
+        { num: 101, text: "Feel comfortable with myself",          answer: 4, justification: "Grandiose surface but thin-skinned reactivity — not stable unconditional self-peace" },
 
         // N4 — Self-Consciousness
         { num: 16,  text: "Am easily intimidated",                 answer: 1, justification: "Never intimidated; projects pure dominance; both voter groups rated 1.75–2.16" },
@@ -42,14 +42,14 @@
 
         // N5 — Immoderation
         { num: 21,  text: "Go on binges",                          answer: 3, justification: "No strong evidence either way" },
-        { num: 51,  text: "Rarely overindulge",                    answer: 4, justification: "Reversed — non-drinker, non-smoker; moderately accurate that he rarely overindulges" },
-        { num: 81,  text: "Easily resist temptations",             answer: 3, justification: "Reversed — mixed; disciplined on substances but impulsive in other areas" },
-        { num: 111, text: "Am able to control my cravings",        answer: 3, justification: "Reversed — neutral; controlled on substances, less so on food/attention" },
+        { num: 51,  text: "Rarely overindulge",                    answer: 2, justification: "Substance abstinence ≠ general impulse control — Diet Coke, fast food, late-night posting" },
+        { num: 81,  text: "Easily resist temptations",             answer: 2, justification: "Documented impulsivity in diet, media use, and rhetoric — not strong cross-domain resistance" },
+        { num: 111, text: "Am able to control my cravings",        answer: 2, justification: "Parallels Item 51 — cravings for attention, food, and conflict poorly controlled" },
 
         // N6 — Vulnerability
         { num: 26,  text: "Panic easily",                          answer: 2, justification: "Narcissists project invincibility, not panic; 'I alone can fix it' posture" },
         { num: 56,  text: "Feel that I'm unable to deal with things", answer: 1, justification: "Antithetical to 'I alone can fix it' self-image; core grandiosity" },
-        { num: 86,  text: "Remain calm under pressure",            answer: 4, justification: "Reversed — presents as outwardly composed (bravado); low vulnerability" },
+        { num: 86,  text: "Remain calm under pressure",            answer: 3, justification: "Explosive anger under pressure is among the most documented traits — not reliable calm" },
         { num: 116, text: "Can handle complex problems",           answer: 4, justification: "Reversed — firmly believes he can handle anything; narcissistic self-efficacy" },
 
         // ================================================================
@@ -57,8 +57,8 @@
         // ================================================================
 
         // E1 — Friendliness
-        { num: 2,   text: "Make friends easily",                   answer: 3, justification: "Makes acquaintances easily; genuine friendships are rare and transactional" },
-        { num: 32,  text: "Warm up quickly to others",             answer: 2, justification: "Warmth is performative; academic consensus = very low (Clinton voters: 1.62, Trump voters: 2.85)" },
+        { num: 2,   text: "Make friends easily",                   answer: 5, justification: "Extremely high Gregariousness — assumes immediate social familiarity and scales contact fast" },
+        { num: 32,  text: "Warm up quickly to others",             answer: 4, justification: "High Extraversion-Warmth as social engagement — disagreeable but socially immediate, not coldly distant" },
         { num: 62,  text: "Am hard to get to know",                answer: 4, justification: "Reversed — he IS hard to truly know behind the persona" },
         { num: 92,  text: "Keep others at a distance",             answer: 3, justification: "Reversed — keeps emotional intimacy at distance but socially available" },
 
@@ -100,7 +100,7 @@
         { num: 3,   text: "Have a vivid imagination",              answer: 3, justification: "Narcissistic/grandiose imagination is real but narrow; fantasy about self, not aesthetics" },
         { num: 33,  text: "Enjoy wild flights of fantasy",         answer: 3, justification: "'Make America Great Again' and 'biggest/best' are fantasy constructs" },
         { num: 63,  text: "Do not have a good imagination",        answer: 2, justification: "Reversed — he does have self-serving imagination" },
-        { num: 93,  text: "Love to daydream",                      answer: 3, justification: "Self-aggrandizing projections = a form of daydreaming" },
+        { num: 93,  text: "Love to daydream",                      answer: 2, justification: "Fantasy facet modest — 'episodic' public style vs. rich inner narrative daydreaming" },
 
         // O2 — Artistic Interests
         { num: 8,   text: "Believe in the importance of art",      answer: 2, justification: "No genuine interest in art; gold-plated aesthetic is conspicuous consumption, not appreciation" },
@@ -111,7 +111,7 @@
         // O3 — Emotionality
         { num: 13,  text: "Experience my emotions intensely",      answer: 4, justification: "Rage, grievance, elation are all intense — his own emotions run hot" },
         { num: 43,  text: "Feel others' emotions",                 answer: 1, justification: "Empathy deficit; cognitive not affective empathy; floor score" },
-        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 2, justification: "Reversed — hyper-aware of his own emotional states; grievances catalogued" },
+        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 5, justification: "Low Openness to Feelings / introspective access — reacts without fine-grained emotional insight" },
         { num: 103, text: "Don't understand people who get emotional", answer: 4, justification: "Reversed — dismisses others' emotional reactions" },
 
         // O4 — Adventurousness
@@ -149,7 +149,7 @@
         { num: 99,  text: "Stick to the rules",                    answer: 1, justification: "Rules are for others; defining pattern" },
 
         // A3 — Altruism
-        { num: 14,  text: "Make people feel welcome",              answer: 2, justification: "Rally charm is real, even if performative; better than floor" },
+        { num: 14,  text: "Make people feel welcome",              answer: 4, justification: "Host and rally warmth — Extraversion-Warmth can be high even when Agreeableness is low" },
         { num: 44,  text: "Anticipate the needs of others",        answer: 1, justification: "Self-focused; does not anticipate others' needs" },
         { num: 74,  text: "Love to help others",                   answer: 1, justification: "Help is transactional; no evidence of altruistic motivation" },
         { num: 104, text: "Am concerned about others",             answer: 1, justification: "Concern is performative and self-serving" },
@@ -219,7 +219,7 @@
       defaultAge: DEFAULT_AGE,
       defaultGender: DEFAULT_GENDER,
       expectedBlurb:
-        'Very high Openness; strong Conscientiousness except dutifulness/cautiousness; very low Agreeableness; elevated anger; low self-consciousness.',
+        'Very high Openness; very high achievement drive but low conventional orderliness/tidiness; very low Agreeableness; very high Volatility (anger) vs. low Withdrawal (worry/anxiety); emotionally intense and self-aware; low self-consciousness in dominance contexts.',
       answers: [
 
         // ================================================================
@@ -227,22 +227,22 @@
         // ================================================================
 
         // N1 — Anxiety
-        { num: 1,   text: "Worry about things",                    answer: 4, justification: "Hogan: despite outward audacity, always worried about things going wrong" },
-        { num: 31,  text: "Fear for the worst",                    answer: 3, justification: "No strong evidence either way" },
-        { num: 61,  text: "Am afraid of many things",              answer: 3, justification: "No strong evidence either way" },
-        { num: 91,  text: "Get stressed out easily",               answer: 4, justification: "Chronic stress responses documented; cancer denial partly attributed to anxiety-driven avoidance" },
+        { num: 1,   text: "Worry about things",                    answer: 2, justification: "Withdrawal/anxiety facet low — reality-distortion confidence vs. chronic worry channel" },
+        { num: 31,  text: "Fear for the worst",                    answer: 2, justification: "Bold product bets and public fearlessness — not a chronic pessimistic worry style" },
+        { num: 61,  text: "Am afraid of many things",              answer: 2, justification: "Harm avoidance modest; dropout, India, NeXT — behavioral low-fear pattern" },
+        { num: 91,  text: "Get stressed out easily",               answer: 3, justification: "Reactivity is anger/Volatility more than anxious overwhelm; Withdrawal not dominant" },
 
         // N2 — Anger
         { num: 6,   text: "Get angry easily",                      answer: 4, justification: "Legendary temper; frequent explosive outbursts at employees" },
         { num: 36,  text: "Get irritated easily",                  answer: 4, justification: "Consistent with documented low frustration tolerance" },
         { num: 66,  text: "Lose my temper",                        answer: 4, justification: "Isaacson documents regular eruptions" },
-        { num: 96,  text: "Am not easily annoyed",                 answer: 2, justification: "Reversed — he was very easily annoyed" },
+        { num: 96,  text: "Am not easily annoyed",                 answer: 1, justification: "Reversed — extremely easily annoyed; Volatility among highest facets" },
 
         // N3 — Depression
-        { num: 11,  text: "Often feel blue",                       answer: 3, justification: "No strong evidence either way" },
-        { num: 41,  text: "Dislike myself",                        answer: 3, justification: "No strong evidence either way" },
-        { num: 71,  text: "Am often down in the dumps",            answer: 3, justification: "No strong evidence either way" },
-        { num: 101, text: "Feel comfortable with myself",          answer: 3, justification: "Reversed — neutral; complex self-image" },
+        { num: 11,  text: "Often feel blue",                       answer: 2, justification: "Withdrawal/depression facet low — upset turns outward (Volatility), not inward blues" },
+        { num: 41,  text: "Dislike myself",                        answer: 1, justification: "Extreme narcissism / minimal Modesty — self-regard on par with historical giants in his mind" },
+        { num: 71,  text: "Am often down in the dumps",            answer: 2, justification: "Not a chronic depressive presentation; energy goes to combat and vision" },
+        { num: 101, text: "Feel comfortable with myself",          answer: 5, justification: "Extreme self-regard — deep comfort with identity despite interpersonal cruelty" },
 
         // N4 — Self-Consciousness
         { num: 16,  text: "Am easily intimidated",                 answer: 1, justification: "No evidence of Jobs being intimidated; used silence and eye contact as dominance tools" },
@@ -251,24 +251,24 @@
         { num: 106, text: "Find it difficult to approach others",  answer: 3, justification: "No strong evidence either way" },
 
         // N5 — Immoderation
-        { num: 21,  text: "Go on binges",                          answer: 2, justification: "Controlled, ascetic lifestyle — extreme diets were disciplined, not impulsive" },
-        { num: 51,  text: "Rarely overindulge",                    answer: 4, justification: "Reversed — he rarely overindulged" },
-        { num: 81,  text: "Easily resist temptations",             answer: 4, justification: "Reversed — strong self-control in personal habits" },
-        { num: 111, text: "Am able to control my cravings",        answer: 4, justification: "Reversed — extreme dietary discipline" },
+        { num: 21,  text: "Go on binges",                          answer: 4, justification: "Documented food binges and single-food phases; mercurial eating patterns" },
+        { num: 51,  text: "Rarely overindulge",                    answer: 2, justification: "Binge-pattern eating and impulsive decisions — not globally restrained" },
+        { num: 81,  text: "Easily resist temptations",             answer: 2, justification: "Poor cross-domain impulse control — anger, diet, abrupt pivots" },
+        { num: 111, text: "Am able to control my cravings",        answer: 2, justification: "Parallels dietary binges and uncontrolled outbursts despite periods of discipline" },
 
         // N6 — Vulnerability
         { num: 26,  text: "Panic easily",                          answer: 3, justification: "No strong evidence either way" },
-        { num: 56,  text: "Feel that I'm unable to deal with things", answer: 3, justification: "No strong evidence either way" },
-        { num: 86,  text: "Remain calm under pressure",            answer: 3, justification: "Reversed — mixed; could be intensely calm or explosive" },
-        { num: 116, text: "Can handle complex problems",           answer: 3, justification: "Reversed — neutral baseline" },
+        { num: 56,  text: "Feel that I'm unable to deal with things", answer: 1, justification: "Extreme self-efficacy and RDF — rarely admitted helplessness" },
+        { num: 86,  text: "Remain calm under pressure",            answer: 2, justification: "Tantrums and public eruptions — Volatility very high; not a calm-under-fire profile" },
+        { num: 116, text: "Can handle complex problems",           answer: 5, justification: "Revived Apple, ran Pixar — intellect and problem-solving at elite documented level" },
 
         // ================================================================
         // EXTRAVERSION (E)
         // ================================================================
 
         // E1 — Friendliness
-        { num: 2,   text: "Make friends easily",                   answer: 2, justification: "Very small inner circle; guarded and cold at first contact" },
-        { num: 32,  text: "Warm up quickly to others",             answer: 2, justification: "Warmth was strategic and selective, not spontaneous" },
+        { num: 2,   text: "Make friends easily",                   answer: 1, justification: "Cold and hard to like at first; very few peers he befriended easily" },
+        { num: 32,  text: "Warm up quickly to others",             answer: 1, justification: "Low Warmth facet — 'bozo' judgments immediate; did not thaw quickly socially" },
         { num: 62,  text: "Am hard to get to know",                answer: 4, justification: "He was genuinely hard to get to know; guarded with most people" },
         { num: 92,  text: "Keep others at a distance",             answer: 4, justification: "Kept most people at arm's length; inner circle was tiny" },
 
@@ -320,9 +320,9 @@
 
         // O3 — Emotionality
         { num: 13,  text: "Experience my emotions intensely",      answer: 4, justification: "Cried frequently; intense emotional reactions well documented" },
-        { num: 43,  text: "Feel others' emotions",                 answer: 2, justification: "Isaacson: could read people to manipulate, not empathize — cognitive not affective empathy" },
-        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 4, justification: "Oblivious to how his emotional reactions landed on others" },
-        { num: 103, text: "Don't understand people who get emotional", answer: 4, justification: "Dismissed emotional employees as weak; cognitive empathy only" },
+        { num: 43,  text: "Feel others' emotions",                 answer: 4, justification: "Read emotions precisely to motivate or wound — high interpersonal emotional detection" },
+        { num: 73,  text: "Rarely notice my emotional reactions",  answer: 2, justification: "Ive: very sensitive; cried often — high awareness of own emotional reactions" },
+        { num: 103, text: "Don't understand people who get emotional", answer: 2, justification: "Deeply emotional himself — wept frequently; judges others' emotion from the inside" },
 
         // O4 — Adventurousness
         { num: 18,  text: "Prefer variety to routine",             answer: 5, justification: "Constantly reinventing products, companies, industries" },
@@ -380,7 +380,7 @@
         { num: 29,  text: "Sympathize with the homeless",          answer: 2, justification: "No documented concern for social causes" },
         { num: 59,  text: "Feel sympathy for those who are worse off than myself", answer: 2, justification: "No philanthropy; shut down Apple's charitable programs" },
         { num: 89,  text: "Believe in an eye for an eye",          answer: 4, justification: "Reversed — retaliatory; held grudges (Google/Android, IBM)" },
-        { num: 119, text: "Try not to think about the needy",      answer: 4, justification: "Reversed — actively avoided charitable engagement" },
+        { num: 119, text: "Try not to think about the needy",      answer: 5, justification: "Eliminated Apple philanthropy; daughter in poverty — maximal avoidant stance toward need" },
 
         // ================================================================
         // CONSCIENTIOUSNESS (C)
@@ -393,13 +393,13 @@
         { num: 95,  text: "Know how to get things done",           answer: 5, justification: "Defining trait — relentless execution" },
 
         // C2 — Orderliness
-        { num: 10,  text: "Like to tidy up",                       answer: 5, justification: "Minimalist aesthetic extended to personal space" },
-        { num: 40,  text: "Often forget to put things back in their proper place", answer: 1, justification: "Reversed — obsessive about order and simplicity" },
-        { num: 70,  text: "Leave a mess in my room",               answer: 1, justification: "Reversed — famously minimal, sparse living spaces" },
-        { num: 100, text: "Like order",                            answer: 5, justification: "Order and simplicity were core values" },
+        { num: 10,  text: "Like to tidy up",                       answer: 5, justification: "Minimalist aesthetic extended to personal space he curated" },
+        { num: 40,  text: "Often forget to put things back in their proper place", answer: 4, justification: "Low Orderliness in research — messy personal/work habits despite design perfectionism" },
+        { num: 70,  text: "Leave a mess in my room",               answer: 4, justification: "Same cluster: disorganized spaces and erratic personal order" },
+        { num: 100, text: "Like order",                            answer: 3, justification: "Loves perceptual order in products, not high everyday organization/orderliness scores" },
 
         // C3 — Dutifulness
-        { num: 15,  text: "Keep my promises",                      answer: 2, justification: "Broke promises to Woz (Atari bonus), employees (equity), daughter Lisa (paternity denial)" },
+        { num: 15,  text: "Keep my promises",                      answer: 1, justification: "DNA-confirmed paternity denial and pattern of broken commitments — dutifulness very low" },
         { num: 45,  text: "Tell the truth",                        answer: 2, justification: "Reality distortion field was documented manipulation; Isaacson records serial deception" },
         { num: 75,  text: "Break rules",                           answer: 4, justification: "Reversed — handicapped parking, SEC rules, ignored medical advice" },
         { num: 105, text: "Break my promises",                     answer: 4, justification: "Reversed — breaking promises was part of his operating style" },
@@ -455,21 +455,21 @@
         { num: 101, text: "Feel comfortable with myself",          answer: 1, justification: "Reversed — crippling low self-esteem; not comfortable with self" },
 
         // N4 — Self-Consciousness
-        { num: 16,  text: "Am easily intimidated",                 answer: 4, justification: "Inner fear coexists with outer aggression" },
-        { num: 46,  text: "Am afraid to draw attention to myself", answer: 2, justification: "Public performances, podcasts — attention workable despite inner anxiety" },
-        { num: 76,  text: "Only feel comfortable with friends",    answer: 4, justification: "Inner-circle attachment; strangers harder" },
+        { num: 16,  text: "Am easily intimidated",                 answer: 2, justification: "History's most intimidating heavyweight — threat response was dominance, not submission" },
+        { num: 46,  text: "Am afraid to draw attention to myself", answer: 1, justification: "Pre-fight warfare, face tattoo, maximum attention-seeking — not fear of the spotlight" },
+        { num: 76,  text: "Only feel comfortable with friends",    answer: 2, justification: "Research notes more ease with public/stranger performance than deep intimacy" },
         { num: 106, text: "Find it difficult to approach others",  answer: 3, justification: "Mixed: anxious in some settings, confrontational in others" },
 
         // N5 — Immoderation
         { num: 21,  text: "Go on binges",                          answer: 5, justification: "Spending, drugs, sex — documented extreme overindulgence" },
         { num: 51,  text: "Rarely overindulge",                    answer: 1, justification: "Reversed — rarely overindulges is false; massive overindulgence" },
         { num: 81,  text: "Easily resist temptations",             answer: 1, justification: "Reversed — cannot resist temptations; financial and addiction history" },
-        { num: 111, text: "Am able to control my cravings",        answer: 2, justification: "Craving battles across substances and impulses" },
+        { num: 111, text: "Am able to control my cravings",        answer: 1, justification: "Early cocaine use, fight-night use, DUI, spending — very poor craving control" },
 
         // N6 — Vulnerability
-        { num: 26,  text: "Panic easily",                          answer: 4, justification: "Panic internalized but channeled into aggression, not collapse" },
-        { num: 56,  text: "Feel that I'm unable to deal with things", answer: 4, justification: "Struggles exist but not full helplessness; recovery arc" },
-        { num: 86,  text: "Remain calm under pressure",            answer: 2, justification: "Reversed — famously calm in the ring; moderate inaccuracy overall" },
+        { num: 26,  text: "Panic easily",                          answer: 2, justification: "Fear converted to forward aggression — not behavioral panic/collapse" },
+        { num: 56,  text: "Feel that I'm unable to deal with things", answer: 2, justification: "High Neuroticism via action and combat — not a helpless-immobilized profile" },
+        { num: 86,  text: "Remain calm under pressure",            answer: 1, justification: "Ear-bite, MMPI-2 irritability — explosive under pressure outside tactical ring calm" },
         { num: 116, text: "Can handle complex problems",           answer: 2, justification: "Reversed — boxing craft demands handling complex tactical problems" },
 
         // ================================================================
@@ -479,8 +479,8 @@
         // E1 — Friendliness
         { num: 2,   text: "Make friends easily",                   answer: 4, justification: "Charismatic but trust issues; friendships uneven" },
         { num: 32,  text: "Warm up quickly to others",             answer: 3, justification: "Social anxiety makes warmth variable; not consistently warm" },
-        { num: 62,  text: "Am hard to get to know",                answer: 3, justification: "Reversed — surface openness but guarded inner self" },
-        { num: 92,  text: "Keep others at a distance",             answer: 3, justification: "Reversed — betrayal history maintains emotional distance" },
+        { num: 62,  text: "Am hard to get to know",                answer: 4, justification: "Rorschach cautious in emotional ties; public persona deliberately obscures interior" },
+        { num: 92,  text: "Keep others at a distance",             answer: 4, justification: "MMPI-2 avoids deep emotional involvement; strong interpersonal walls" },
 
         // E2 — Gregariousness
         { num: 7,   text: "Love large parties",                    answer: 4, justification: "Enjoys crowds, spectacle, Vegas energy" },
@@ -491,7 +491,7 @@
         // E3 — Assertiveness
         { num: 12,  text: "Take charge",                           answer: 4, justification: "Dominant in ring, interviews, and life situations" },
         { num: 42,  text: "Try to lead others",                    answer: 3, justification: "Leading the ring narrative but not always organizations" },
-        { num: 72,  text: "Wait for others to lead the way",       answer: 2, justification: "Reversed — acts first; does not wait to lead" },
+        { num: 72,  text: "Wait for others to lead the way",       answer: 1, justification: "Assertiveness dominant — seizes lead in every arena he enters" },
         { num: 102, text: "Keep in the background",                answer: 2, justification: "Reversed — never background; center of gravity" },
 
         // E4 — Activity Level
@@ -507,7 +507,7 @@
         { num: 112, text: "Enjoy being reckless",                  answer: 5, justification: "Youthful recklessness; impulse and spectacle" },
 
         // E6 — Cheerfulness
-        { num: 27,  text: "Radiate joy",                           answer: 3, justification: "Episodic joy; not steady cheer baseline" },
+        { num: 27,  text: "Radiate joy",                           answer: 2, justification: "MGH depression narrative; MMPI unhappy/sad — not a joy-forward baseline" },
         { num: 57,  text: "Have a lot of fun",                     answer: 4, justification: "Later-life joy, podcast humor — genuinely has fun" },
         { num: 87,  text: "Am not easily amused",                  answer: 2, justification: "Reversed — infectious laugh; readily amused" },
         { num: 117, text: "Love life",                             answer: 4, justification: "Post-therapy spirituality; expresses love of life" },
@@ -532,12 +532,12 @@
         { num: 13,  text: "Experience my emotions intensely",      answer: 5, justification: "Defining trait: rage, grief, love, all at extremes; bipolar amplification" },
         { num: 43,  text: "Feel others' emotions",                 answer: 3, justification: "Can read emotional tones especially in combat context" },
         { num: 73,  text: "Rarely notice my emotional reactions",  answer: 1, justification: "Reversed — hyper-vigilant to own emotions" },
-        { num: 103, text: "Don't understand people who get emotional", answer: 2, justification: "Reversed — emotional himself; empathizes in interviews" },
+        { num: 103, text: "Don't understand people who get emotional", answer: 1, justification: "Highly emotionally expressive publicly — tears with Oprah, podcast, D'Amato grief" },
 
         // O4 — Adventurousness
         { num: 18,  text: "Prefer variety to routine",             answer: 4, justification: "Life of extreme variety, reinvention, chaos" },
-        { num: 48,  text: "Prefer to stick with things that I know", answer: 3, justification: "Comfort zones and familiar routines when stable" },
-        { num: 78,  text: "Am attached to conventional ways",      answer: 2, justification: "Reversed — unconventional in virtually every dimension" },
+        { num: 48,  text: "Prefer to stick with things that I know", answer: 1, justification: "Radical novelty-seeker — Islam, toad venom, Broadway, philosophy; anti-sticking-to-the-known" },
+        { num: 78,  text: "Am attached to conventional ways",      answer: 1, justification: "Rorschach: interprets info unconventionally; low concern for social acceptability" },
         { num: 108, text: "Like to visit new places",              answer: 4, justification: "World travel and novelty-seeking" },
 
         // O5 — Intellect
@@ -557,8 +557,8 @@
         // ================================================================
 
         // A1 — Trust
-        { num: 4,   text: "Trust others",                          answer: 2, justification: "Distrust and betrayal themes; low baseline trust" },
-        { num: 34,  text: "Believe that others have good intentions", answer: 2, justification: "Assumes bad intent after repeated exploitation" },
+        { num: 4,   text: "Trust others",                          answer: 1, justification: "MGH evaluation: trusts virtually no one; hypervigilant attachment" },
+        { num: 34,  text: "Believe that others have good intentions", answer: 1, justification: "MMPI-2 suspiciousness; sees naive optimism as 'sucker' stance" },
         { num: 64,  text: "Trust what people say",                 answer: 2, justification: "Skeptical of others' words after burns" },
         { num: 94,  text: "Distrust people",                       answer: 4, justification: "Betrayal narrative; baseline distrust" },
 
@@ -569,7 +569,7 @@
         { num: 99,  text: "Stick to the rules",                    answer: 1, justification: "Rule-following is not hallmark outside ring codes" },
 
         // A3 — Altruism
-        { num: 14,  text: "Make people feel welcome",              answer: 3, justification: "Podcast warmth and charm; loyal to inner circle" },
+        { num: 14,  text: "Make people feel welcome",              answer: 2, justification: "Domination and caution in closeness — warmth not the primary social mode" },
         { num: 44,  text: "Anticipate the needs of others",        answer: 2, justification: "Self-focused; limited anticipatory care for strangers" },
         { num: 74,  text: "Love to help others",                   answer: 3, justification: "Documented charitable impulses and giving" },
         { num: 104, text: "Am concerned about others",             answer: 3, justification: "Cares about close circle; mixed for strangers" },
@@ -582,7 +582,7 @@
 
         // A5 — Modesty
         { num: 24,  text: "Believe that I am better than others",  answer: 4, justification: "Grandiosity eras alternate with shame" },
-        { num: 54,  text: "Think highly of myself",                answer: 3, justification: "Grandiosity and self-loathing coexist — split captures both" },
+        { num: 54,  text: "Think highly of myself",                answer: 4, justification: "Grandiosity pole emphasized — 'biggest ego' eras; 3 flattened the paradox" },
         { num: 84,  text: "Make myself the center of attention",   answer: 4, justification: "Center of attention in fame phases" },
         { num: 114, text: "Dislike being the center of attention", answer: 2, justification: "Fame forces spotlight; not seeking to hide" },
 
@@ -597,10 +597,10 @@
         // ================================================================
 
         // C1 — Self-Efficacy
-        { num: 5,   text: "Complete tasks successfully",           answer: 3, justification: "Ring success vs. life chaos — blended self-efficacy" },
+        { num: 5,   text: "Complete tasks successfully",           answer: 2, justification: "Massive earnings yet bankruptcy — life domains collapsed without external scaffolding" },
         { num: 35,  text: "Excel in what I do",                    answer: 4, justification: "Youngest heavyweight champ — excelled at boxing peak" },
         { num: 65,  text: "Handle tasks smoothly",                 answer: 2, justification: "Life outside craft often disorganized failure" },
-        { num: 95,  text: "Know how to get things done",           answer: 3, justification: "Gets things done in craft; life management messier" },
+        { num: 95,  text: "Know how to get things done",           answer: 2, justification: "Execution collapsed without D'Amato-era scaffolding — not robust life-domain agency" },
 
         // C2 — Orderliness
         { num: 10,  text: "Like to tidy up",                       answer: 2, justification: "Chaotic environments; not naturally orderly" },
@@ -609,8 +609,8 @@
         { num: 100, text: "Like order",                            answer: 2, justification: "Disorder beats love-of-order in daily life" },
 
         // C3 — Dutifulness
-        { num: 15,  text: "Keep my promises",                      answer: 2, justification: "Broken promises and unstable relationships documented" },
-        { num: 45,  text: "Tell the truth",                        answer: 3, justification: "Brutal honesty about self and others in media" },
+        { num: 15,  text: "Keep my promises",                      answer: 1, justification: "Unpaid debts, stolen property reports, parole violations — promise-keeping very weak" },
+        { num: 45,  text: "Tell the truth",                        answer: 4, justification: "Undisputed Truth and interviews — radical candor about drugs, money, failures" },
         { num: 75,  text: "Break rules",                           answer: 5, justification: "Reversed — extreme rule-breaking across eras" },
         { num: 105, text: "Break my promises",                     answer: 4, justification: "Unreliability punctuates relationships and business" },
 
@@ -621,7 +621,7 @@
         { num: 110, text: "Set high standards for myself and others", answer: 4, justification: "Perfectionist training standards at peak" },
 
         // C5 — Self-Discipline
-        { num: 25,  text: "Am always prepared",                    answer: 2, justification: "Prepared obsessively under Cus; overall uneven" },
+        { num: 25,  text: "Am always prepared",                    answer: 1, justification: "Own words: lazy/selfish without structure; needs external coaching to prepare" },
         { num: 55,  text: "Carry out my plans",                    answer: 2, justification: "Some plans land; many derail — moderate inaccuracy" },
         { num: 85,  text: "Waste my time",                         answer: 4, justification: "Reversed — wastes time significantly but not totally" },
         { num: 115, text: "Have difficulty starting tasks",        answer: 3, justification: "Starts impulsively; completion/discipline is the struggle" },
@@ -639,7 +639,7 @@
       defaultAge: DEFAULT_AGE,
       defaultGender: DEFAULT_GENDER,
       expectedBlurb:
-        'Expect very high Agreeableness + Openness, very low Neuroticism.',
+        'Expect very high Agreeableness + Openness, very low Neuroticism; warm introvert — effective on camera but conflict-avoidant, deferential in business, and meticulous in craft (high orderliness).',
       answers: [
         // ================================================================
         // NEUROTICISM (N)
@@ -665,8 +665,8 @@
 
         // N4 — Self-Consciousness
         { num: 16,  text: "Am easily intimidated",                 answer: 1, justification: "Retained after calibration; N4 Self-Consciousness (plus-keyed baseline)" },
-        { num: 46,  text: "Am afraid to draw attention to myself", answer: 2, justification: "Fiercely private; rare interviews despite TV fame" },
-        { num: 76,  text: "Only feel comfortable with friends",    answer: 2, justification: "Warm on TV; guarded personal circle" },
+        { num: 46,  text: "Am afraid to draw attention to myself", answer: 3, justification: "Tension between public role and private self; few interviews, disliked trademark look" },
+        { num: 76,  text: "Only feel comfortable with friends",    answer: 4, justification: "Deeply private, tiny real circle — stranger-warmth partly performance" },
         { num: 106, text: "Find it difficult to approach others",  answer: 1, justification: "Retained after calibration; N4 Self-Consciousness (plus-keyed baseline)" },
 
         // N5 — Immoderation
@@ -693,20 +693,20 @@
 
         // E2 — Gregariousness
         { num: 7,   text: "Love large parties",                    answer: 2, justification: "Preferred Alaska solitude and nature over party scene" },
-        { num: 37,  text: "Talk to a lot of different people at parties", answer: 3, justification: "Retained after calibration; E2 Gregariousness (plus-keyed baseline)" },
-        { num: 67,  text: "Avoid crowds",                          answer: 3, justification: "Retained after calibration; E2 Gregariousness (reverse-keyed baseline)" },
+        { num: 37,  text: "Talk to a lot of different people at parties", answer: 2, justification: "ISFP introvert — effective on camera, not a party-mixer personality" },
+        { num: 67,  text: "Avoid crowds",                          answer: 4, justification: "Prefers solitude and privacy; not energized by anonymous crowds" },
         { num: 97,  text: "Prefer to be alone",                    answer: 4, justification: "Reversed — genuine love of alone time in wilderness" },
 
         // E3 — Assertiveness
-        { num: 12,  text: "Take charge",                           answer: 4, justification: "MSgt drill instructor; leader in studio and business" },
-        { num: 42,  text: "Try to lead others",                    answer: 4, justification: "Teaching empire — led every instructional frame" },
-        { num: 72,  text: "Wait for others to lead the way",       answer: 2, justification: "Reversed — built own method, brand, and company" },
-        { num: 102, text: "Keep in the background",                answer: 2, justification: "Reversed — face of global franchise; not background figure" },
+        { num: 12,  text: "Take charge",                           answer: 3, justification: "Enneagram 9 — conflict-avoidant; deferred tough business calls to Kowalskis" },
+        { num: 42,  text: "Try to lead others",                    answer: 3, justification: "Deliberately rejected organizational leadership — son notes 'good person' over 'businessman'" },
+        { num: 72,  text: "Wait for others to lead the way",       answer: 4, justification: "Highly deferential in business; 'content to let Walt manage tough negotiations'" },
+        { num: 102, text: "Keep in the background",                answer: 4, justification: "Engineered show so viewer was the artist; avoided spotlight off-camera" },
 
         // E4 — Activity Level
         { num: 17,  text: "Am always busy",                        answer: 4, justification: "Three paintings per episode plus workshops — relentless output" },
         { num: 47,  text: "Am always on the go",                   answer: 3, justification: "Busy yet valued contemplation; balanced 3" },
-        { num: 77,  text: "Like to take it easy",                  answer: 3, justification: "Reversed — calm demeanor but extraordinarily productive" },
+        { num: 77,  text: "Like to take it easy",                  answer: 4, justification: "'No pressure, just relax' philosophy; ease over striving matches ISFP/Type 9" },
         { num: 107, text: "Do a lot in my spare time",             answer: 4, justification: "Wildlife rehab, teaching, painting — packed non-TV life" },
 
         // E5 — Excitement-Seeking
@@ -744,9 +744,9 @@
         { num: 103, text: "Don't understand people who get emotional", answer: 1, justification: "Reversed — emotional insight was core teaching skill" },
 
         // O4 — Adventurousness
-        { num: 18,  text: "Prefer variety to routine",             answer: 3, justification: "Decades of same formula, palette, mountain motif" },
-        { num: 48,  text: "Prefer to stick with things that I know", answer: 4, justification: "Reversed — mastery relied on familiar repeatable method" },
-        { num: 78,  text: "Am attached to conventional ways",      answer: 3, justification: "Reversed — innovative painter, conventional personal lifestyle" },
+        { num: 18,  text: "Prefer variety to routine",             answer: 2, justification: "31 seasons of same format — routine framework was defining" },
+        { num: 48,  text: "Prefer to stick with things that I know", answer: 3, justification: "Openness + innovation in pedagogy — not rigid stick-to-the-known despite repeated motif" },
+        { num: 78,  text: "Am attached to conventional ways",      answer: 2, justification: "Rejected fine-art establishment; unconventional teaching path" },
         { num: 108, text: "Like to visit new places",              answer: 4, justification: "Retained after calibration; O4 Adventurousness (plus-keyed baseline)" },
 
         // O5 — Intellect
@@ -766,10 +766,10 @@
         // ================================================================
 
         // A1 — Trust
-        { num: 4,   text: "Trust others",                          answer: 4, justification: "Trusted partners; betrayal narrative — not blind faith" },
-        { num: 34,  text: "Believe that others have good intentions", answer: 4, justification: "Same — learned suspicion tempered absolutism" },
-        { num: 64,  text: "Trust what people say",                 answer: 4, justification: "Same realism about others reliability" },
-        { num: 94,  text: "Distrust people",                       answer: 2, justification: "Reversed — late-life wariness after business wounds" },
+        { num: 4,   text: "Trust others",                          answer: 5, justification: "Excessively trusting — deferred to Kowalskis to personal financial cost" },
+        { num: 34,  text: "Believe that others have good intentions", answer: 5, justification: "Default stance charitable until betrayed; aligns with excessive partner trust" },
+        { num: 64,  text: "Trust what people say",                 answer: 5, justification: "Same deferential trust pattern before late-life business wounds" },
+        { num: 94,  text: "Distrust people",                       answer: 1, justification: "Reversed — constitutionally high trust early on; distrust rises only after betrayal" },
 
         // A2 — Morality
         { num: 9,   text: "Use others for my own ends",            answer: 2, justification: "Brand built on Alexander lineage controversy" },
@@ -792,8 +792,8 @@
         // A5 — Modesty
         { num: 24,  text: "Believe that I am better than others",  answer: 2, justification: "Retained after calibration; A5 Modesty (reverse-keyed baseline)" },
         { num: 54,  text: "Think highly of myself",                answer: 3, justification: "Reversed — documented ego behind humble we-language" },
-        { num: 84,  text: "Make myself the center of attention",   answer: 3, justification: "Reversed — unavoidable center of television product" },
-        { num: 114, text: "Dislike being the center of attention", answer: 3, justification: "Professionally spotlighted; privately shy — split score" },
+        { num: 84,  text: "Make myself the center of attention",   answer: 2, justification: "Deflected credit to viewers; framed show around student not star" },
+        { num: 114, text: "Dislike being the center of attention", answer: 4, justification: "Few interviews; private life; discomfort with fame beyond teaching frame" },
 
         // A6 — Sympathy
         { num: 29,  text: "Sympathize with the homeless",          answer: 5, justification: "Retained after calibration; A6 Sympathy (plus-keyed baseline)" },
@@ -812,10 +812,10 @@
         { num: 95,  text: "Know how to get things done",           answer: 5, justification: "Self-made global instruction business" },
 
         // C2 — Orderliness
-        { num: 10,  text: "Like to tidy up",                       answer: 3, justification: "Retained after calibration; C2 Orderliness (plus-keyed baseline)" },
+        { num: 10,  text: "Like to tidy up",                       answer: 4, justification: "Military habit; meticulous brush/palette ritual every episode" },
         { num: 40,  text: "Often forget to put things back in their proper place", answer: 2, justification: "Reversed — brush care and palette discipline legendary" },
         { num: 70,  text: "Leave a mess in my room",               answer: 2, justification: "Reversed — studio ritual cleanliness" },
-        { num: 100, text: "Like order",                            answer: 4, justification: "Military habit plus televised routine prized order" },
+        { num: 100, text: "Like order",                            answer: 5, justification: "Kowalski: 'tyrant' on exact methods; three paintings per episode discipline" },
 
         // C3 — Dutifulness
         { num: 15,  text: "Keep my promises",                      answer: 4, justification: "Retained after calibration; C3 Dutifulness (plus-keyed baseline)" },
@@ -827,7 +827,7 @@
         { num: 20,  text: "Work hard",                             answer: 5, justification: "Renaissance-level workload in soft voice" },
         { num: 50,  text: "Do more than what's expected of me",    answer: 5, justification: "Over-delivered encouragement, animals, education every show" },
         { num: 80,  text: "Do just enough work to get by",         answer: 1, justification: "Reversed — never coasting; maximal effort culture" },
-        { num: 110, text: "Set high standards for myself and others", answer: 4, justification: "Retained after calibration; C4 Achievement-Striving (plus-keyed baseline)" },
+        { num: 110, text: "Set high standards for myself and others", answer: 5, justification: "Rehearsed every word; military-grade consistency for 31 seasons" },
 
         // C5 — Self-Discipline
         { num: 25,  text: "Am always prepared",                    answer: 5, justification: "Pre-produced three versions; military precision prep" },
@@ -875,7 +875,7 @@
         // N4 — Self-Consciousness
         { num: 16,  text: "Am easily intimidated",                 answer: 5, justification: "Painful shyness masked by performance" },
         { num: 46,  text: "Am afraid to draw attention to myself", answer: 4, justification: "Frontman for millions — drew attention reluctantly; ambivalence not total avoidance" },
-        { num: 76,  text: "Only feel comfortable with friends",    answer: 5, justification: "Trusted tiny circle only" },
+        { num: 76,  text: "Only feel comfortable with friends",    answer: 4, justification: "Even bandmates and Olympia friends felt distant by end — comfort narrowed, not omnipresent" },
         { num: 106, text: "Find it difficult to approach others",  answer: 5, justification: "Approach anxiety in non-musical social life" },
 
         // N5 — Immoderation
@@ -888,16 +888,16 @@
         { num: 26,  text: "Panic easily",                          answer: 5, justification: "Overwhelmed easily when reserves depleted" },
         { num: 56,  text: "Feel that I'm unable to deal with things", answer: 5, justification: "Felt unable to cope with fame demands" },
         { num: 86,  text: "Remain calm under pressure",            answer: 1, justification: "Reversed — brittle calm; not resilient under pressure" },
-        { num: 116, text: "Can handle complex problems",           answer: 1, justification: "Reversed — executive function collapsed late; complex problems felt impossible" },
+        { num: 116, text: "Can handle complex problems",           answer: 3, justification: "Strong aesthetic/musical problem-solving — N6 collapse ≠ zero complexity capacity" },
 
         // ================================================================
         // EXTRAVERSION (E)
         // ================================================================
 
         // E1 — Friendliness
-        { num: 2,   text: "Make friends easily",                   answer: 2, justification: "Small trusted circle; not socially expansive" },
+        { num: 2,   text: "Make friends easily",                   answer: 1, justification: "Extreme shyness; slunk out after gigs — socially isolated even from bandmates late" },
         { num: 32,  text: "Warm up quickly to others",             answer: 2, justification: "Slow to warm; misanthropic streak in quotes" },
-        { num: 62,  text: "Am hard to get to know",                answer: 4, justification: "Reversed — genuinely hard to know beneath persona" },
+        { num: 62,  text: "Am hard to get to know",                answer: 5, justification: "Profoundly unknowable — irony, deflection, 'if you read, you'll judge'" },
         { num: 92,  text: "Keep others at a distance",             answer: 4, justification: "Reversed — emotional walls with most people" },
 
         // E2 — Gregariousness
@@ -907,7 +907,7 @@
         { num: 97,  text: "Prefer to be alone",                    answer: 5, justification: "Reversed — solitude default in Seattle years" },
 
         // E3 — Assertiveness
-        { num: 12,  text: "Take charge",                           answer: 3, justification: "Creative dictator of Nirvana; led sound and vision if not social management" },
+        { num: 12,  text: "Take charge",                           answer: 2, justification: "Passive-assertive style; fired drummer by letter; low-affect delivery — not dominant administrator" },
         { num: 42,  text: "Try to lead others",                    answer: 3, justification: "Drove band artistic direction from early days" },
         { num: 72,  text: "Wait for others to lead the way",       answer: 3, justification: "Reversed — led in studio; sometimes passive in press; mixed" },
         { num: 102, text: "Keep in the background",                answer: 3, justification: "Reversed — undisputed frontman yet ambivalent about stardom" },
@@ -919,15 +919,15 @@
         { num: 107, text: "Do a lot in my spare time",             answer: 2, justification: "Journals, drawing, guitar at home — spare time not empty" },
 
         // E5 — Excitement-Seeking
-        { num: 22,  text: "Love excitement",                       answer: 2, justification: "Thrill-seeking channelled into sound, not sports" },
-        { num: 52,  text: "Seek adventure",                        answer: 2, justification: "Adventure muted; domestic focus" },
+        { num: 22,  text: "Love excitement",                       answer: 4, justification: "Heroin, vandalism, reckless performance — excitement-seeking elevates Extraversion facet" },
+        { num: 52,  text: "Seek adventure",                        answer: 3, justification: "Reckless tours, substances, vandalism — psychological adventure if not tourist travel" },
         { num: 82,  text: "Would never go hang gliding or bungee jumping", answer: 4, justification: "Reversed — would skip physical risk activities" },
         { num: 112, text: "Enjoy being reckless",                  answer: 3, justification: "Substance and romantic risk carried defiant edge; moderate thrill" },
 
         // E6 — Cheerfulness
         { num: 27,  text: "Radiate joy",                           answer: 2, justification: "Public joy often performed; private mood darker" },
-        { num: 57,  text: "Have a lot of fun",                     answer: 2, justification: "Fun episodic, not baseline temperament" },
-        { num: 87,  text: "Am not easily amused",                  answer: 4, justification: "Reversed — hard to amuse when depressed" },
+        { num: 57,  text: "Have a lot of fun",                     answer: 3, justification: "Bandmates document real laughter and absurdist humor — not only dour baseline" },
+        { num: 87,  text: "Am not easily amused",                  answer: 3, justification: "Easily delighted by absurdity when present — 'not easily amused' overstates dourness" },
         { num: 117, text: "Love life",                             answer: 2, justification: "Love-of-life ambivalence in final years" },
 
         // ================================================================
@@ -953,15 +953,15 @@
         { num: 103, text: "Don't understand people who get emotional", answer: 1, justification: "Reversed — took others emotional seriousness seriously" },
 
         // O4 — Adventurousness
-        { num: 18,  text: "Prefer variety to routine",             answer: 3, justification: "Aberdeen/Seattle habits deeply anchored; variety mostly musical" },
-        { num: 48,  text: "Prefer to stick with things that I know", answer: 3, justification: "Reversed — genre-flips vs. comfort of routine; blended" },
+        { num: 18,  text: "Prefer variety to routine",             answer: 4, justification: "Anti-routine ethics plus genre mutation — Openness-driven variety, not suburban monotony" },
+        { num: 48,  text: "Prefer to stick with things that I know", answer: 2, justification: "High Openness — genre blending, cross-dressing, Burroughs; anti-routine ethos" },
         { num: 78,  text: "Am attached to conventional ways",      answer: 2, justification: "Mixed conventional suburb roots vs. punk rebellion" },
         { num: 108, text: "Like to visit new places",              answer: 3, justification: "Tour obligation without tourist enthusiasm; not avid novelty travel" },
 
         // O5 — Intellect
         { num: 23,  text: "Like to solve complex problems",        answer: 4, justification: "Lyric density and metaphor complexity" },
-        { num: 53,  text: "Avoid philosophical discussions",       answer: 2, justification: "Engaged feminist and political reads" },
-        { num: 83,  text: "Am not interested in abstract ideas",   answer: 2, justification: "Abstract themes in songs about power and pain" },
+        { num: 53,  text: "Avoid philosophical discussions",       answer: 1, justification: "Burroughs, feminist theory, journals — actively seeks philosophical engagement" },
+        { num: 83,  text: "Am not interested in abstract ideas",   answer: 1, justification: "Deeply engaged with abstract politics and aesthetics — reverse-keyed item disagreed strongly" },
         { num: 113, text: "Can handle a lot of information",       answer: 3, justification: "Sharp when sober; capacity eroded significantly by long addiction" },
 
         // O6 — Liberalism
@@ -975,21 +975,21 @@
         // ================================================================
 
         // A1 — Trust
-        { num: 4,   text: "Trust others",                          answer: 2, justification: "Suspicious of industry; betrayal sensitivity" },
-        { num: 34,  text: "Believe that others have good intentions", answer: 2, justification: "Assumed bad faith from press" },
-        { num: 64,  text: "Trust what people say",                 answer: 2, justification: "Questioned motives of handlers" },
-        { num: 94,  text: "Distrust people",                       answer: 4, justification: "Reversed — baseline distrust elevated" },
+        { num: 4,   text: "Trust others",                          answer: 1, justification: "NEO Trust at floor — 'friends are nothing but a known enemy'" },
+        { num: 34,  text: "Believe that others have good intentions", answer: 1, justification: "Paranoia toward press/public; assumes judgment and bad faith" },
+        { num: 64,  text: "Trust what people say",                 answer: 1, justification: "Parallel low trust — questions every motive" },
+        { num: 94,  text: "Distrust people",                       answer: 5, justification: "Reversed — maximal interpersonal distrust" },
 
         // A2 — Morality
-        { num: 9,   text: "Use others for my own ends",            answer: 3, justification: "Band friction and guilt; unwilling exploiter rather than cold strategist" },
+        { num: 9,   text: "Use others for my own ends",            answer: 2, justification: "Withdrawn self-destruction more than cynical exploitation — not a Machiavellian operator" },
         { num: 39,  text: "Know how to get around the rules",      answer: 4, justification: "Rule-bending in punk ethos though not Machiavellian" },
-        { num: 69,  text: "Use flattery to get ahead",             answer: 2, justification: "Reversed — blunt and awkward salesmanship; confrontation over flattery" },
+        { num: 69,  text: "Use flattery to get ahead",             answer: 1, justification: "Anti-ingratiation — e.g. 'Corporate Magazines Still Suck' at Rolling Stone" },
         { num: 99,  text: "Stick to the rules",                    answer: 2, justification: "Honesty about not being a saint" },
 
         // A3 — Altruism
         { num: 14,  text: "Make people feel welcome",              answer: 3, justification: "Feminist allyship; cared about fans wellbeing" },
-        { num: 44,  text: "Anticipate the needs of others",        answer: 3, justification: "Charity instincts uneven but present" },
-        { num: 74,  text: "Love to help others",                   answer: 4, justification: "Career aimed to voice outcast pain and help fans feel understood" },
+        { num: 44,  text: "Anticipate the needs of others",        answer: 2, justification: "Very low interpersonal Altruism — pushed away helpers" },
+        { num: 74,  text: "Love to help others",                   answer: 3, justification: "Political empathy for groups ≠ day-to-day nurturance — altruism facet remains low" },
         { num: 104, text: "Am concerned about others",             answer: 4, justification: "Anti-sexism, anti-homophobia, feminist themes — documented concern" },
 
         // A4 — Cooperation
@@ -1000,23 +1000,23 @@
 
         // A5 — Modesty
         { num: 24,  text: "Believe that I am better than others",  answer: 3, justification: "Imposter feelings alongside fame" },
-        { num: 54,  text: "Think highly of myself",                answer: 2, justification: "Reversed — relentless self-deprecation in interviews" },
+        { num: 54,  text: "Think highly of myself",                answer: 1, justification: "Floor self-regard — 'ugly, awkward… socially retarded'; extreme self-deprecation" },
         { num: 84,  text: "Make myself the center of attention",   answer: 2, justification: "Reversed — actively resisted myth of wanting stardom" },
         { num: 114, text: "Dislike being the center of attention", answer: 4, justification: "Reluctant icon; discomfort as megastar well documented" },
 
         // A6 — Sympathy
-        { num: 29,  text: "Sympathize with the homeless",          answer: 4, justification: "Working-class identification; championed marginalized and poor" },
+        { num: 29,  text: "Sympathize with the homeless",          answer: 5, justification: "Mythologized bridge narrative — among his most consistent political sympathies" },
         { num: 59,  text: "Feel sympathy for those who are worse off than myself", answer: 4, justification: "Outcast solidarity core to lyrics and public stance" },
         { num: 89,  text: "Believe in an eye for an eye",          answer: 3, justification: "Reversed — feuds existed alongside empathy and forgiveness threads" },
-        { num: 119, text: "Try not to think about the needy",      answer: 2, justification: "Reversed — marginalized experience stayed central to his work" },
+        { num: 119, text: "Try not to think about the needy",      answer: 1, justification: "Reversed — needy and marginalized stayed urgently salient in art and politics" },
 
         // ================================================================
         // CONSCIENTIOUSNESS (C)
         // ================================================================
 
         // C1 — Self-Efficacy
-        { num: 5,   text: "Complete tasks successfully",           answer: 3, justification: "Nevermind, In Utero, Unplugged — real completion amid personal chaos" },
-        { num: 35,  text: "Excel in what I do",                    answer: 4, justification: "Musically undeniably excelled; reshaped rock" },
+        { num: 5,   text: "Complete tasks successfully",           answer: 2, justification: "Very low Competence facet offstage — dropout, rehab walkouts despite musical peaks" },
+        { num: 35,  text: "Excel in what I do",                    answer: 3, justification: "Self-described failure — 'I think I'm dumb'; imposter frame despite impact" },
         { num: 65,  text: "Handle tasks smoothly",                 answer: 2, justification: "Inconsistent follow-through outside music" },
         { num: 95,  text: "Know how to get things done",           answer: 3, justification: "Built Nirvana from scratch; knew how to realize records" },
 
@@ -1028,7 +1028,7 @@
 
         // C3 — Dutifulness
         { num: 15,  text: "Keep my promises",                      answer: 2, justification: "Broken commitments in personal relationships" },
-        { num: 45,  text: "Tell the truth",                        answer: 3, justification: "Brutally honest about mind, industry, and denial cycles when lucid" },
+        { num: 45,  text: "Tell the truth",                        answer: 4, justification: "Authenticity ethic — called out homophobic fans at personal cost; candid interviews" },
         { num: 75,  text: "Break rules",                           answer: 4, justification: "Rules flexible; punk anti-authority" },
         { num: 105, text: "Break my promises",                     answer: 4, justification: "Promises eroded by addiction" },
 
@@ -1045,7 +1045,7 @@
         { num: 115, text: "Have difficulty starting tasks",        answer: 4, justification: "Deepest lows froze initiative; early years started projects fast" },
 
         // C6 — Cautiousness
-        { num: 30,  text: "Avoid mistakes",                        answer: 2, justification: "Avoided mistakes in recording; reckless in life" },
+        { num: 30,  text: "Avoid mistakes",                        answer: 1, justification: "Very Low Deliberation — life-domain impulsivity dominated" },
         { num: 60,  text: "Rush into things",                      answer: 4, justification: "Impulsive medically and romantically" },
         { num: 90,  text: "Make rash decisions",                   answer: 4, justification: "Rash choices around substances" },
         { num: 120, text: "Jump into things without thinking",     answer: 4, justification: "Heroin, romance, stage destruction, dropout — documented impulsive pattern" },
